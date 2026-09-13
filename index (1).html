@@ -1,0 +1,2663 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LEGACY RP</title>
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    color: #fff;
+    min-height: 100vh;
+    overflow-x: hidden;
+    background: linear-gradient(180deg, #2a1f17 0%, #1a120b 100%);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .city-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+      linear-gradient(180deg, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.7) 100%),
+      url('photo_2026-08-19_09-52-19.jpg');
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    z-index: -1;
+  }
+
+  .buildings-overlay {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 45%;
+    background: linear-gradient(180deg, transparent 0%, #0a0604 100%);
+    clip-path: polygon(
+      0% 100%, 0% 60%, 3% 55%, 3% 40%, 8% 35%, 8% 50%, 12% 50%, 
+      12% 30%, 18% 28%, 18% 45%, 22% 45%, 22% 25%, 28% 22%, 
+      28% 40%, 35% 40%, 35% 18%, 40% 15%, 40% 35%, 48% 35%, 
+      48% 50%, 55% 50%, 55% 28%, 62% 25%, 62% 45%, 70% 45%, 
+      70% 32%, 78% 30%, 78% 50%, 85% 50%, 85% 38%, 92% 35%, 
+      92% 55%, 100% 55%, 100% 100%
+    );
+    z-index: -1;
+    opacity: 0.9;
+  }
+
+  .window-lights {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 35%;
+    background-image: 
+      radial-gradient(circle 2px at 5% 70%, #ffcc66 0%, transparent 100%),
+      radial-gradient(circle 2px at 12% 50%, #ffcc66 0%, transparent 100%),
+      radial-gradient(circle 2px at 18% 35%, #ffcc66 0%, transparent 100%),
+      radial-gradient(circle 2px at 25% 45%, #ffcc66 0%, transparent 100%),
+      radial-gradient(circle 2px at 32% 30%, #ffcc66 0%, transparent 100%),
+      radial-gradient(circle 2px at 40% 25%, #ffcc66 0%, transparent 100%),
+      radial-gradient(circle 2px at 48% 35%, #ffcc66 0%, transparent 100%),
+      radial-gradient(circle 2px at 56% 25%, #ffcc66 0%, transparent 100%),
+      radial-gradient(circle 2px at 64% 35%, #ffcc66 0%, transparent 100%),
+      radial-gradient(circle 2px at 72% 45%, #ffcc66 0%, transparent 100%),
+      radial-gradient(circle 2px at 80% 30%, #ffcc66 0%, transparent 100%),
+      radial-gradient(circle 2px at 88% 35%, #ffcc66 0%, transparent 100%),
+      radial-gradient(circle 2px at 95% 45%, #ffcc66 0%, transparent 100%);
+    z-index: 0;
+    opacity: 0.6;
+  }
+
+  nav {
+    position: relative;
+    background: rgba(20, 14, 10, 0.55);
+    backdrop-filter: blur(12px);
+    border: 2px solid #ff6b1a;
+    border-radius: 50px;
+    margin: 30px auto;
+    padding: 14px 36px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 1400px;
+    width: calc(100% - 60px);
+    z-index: 10;
+    box-shadow: 0 0 20px rgba(255, 107, 26, 0.25);
+    gap: 16px;
+  }
+
+  .nav-inner-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 900;
+    font-size: 24px;
+    letter-spacing: 2px;
+  }
+
+  .logo-box {
+    background: #fff;
+    color: #000;
+    padding: 6px 14px;
+    position: relative;
+    font-weight: 900;
+    letter-spacing: 3px;
+    font-size: 18px;
+    clip-path: polygon(0 0, 100% 0, 95% 100%, 0 100%);
+  }
+
+  .logo-box::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: #ff6b1a;
+    box-shadow: 0 4px 0 #ff6b1a, 0 -4px 0 #ff6b1a;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  /* Кнопки в навігації */
+  .nav-link.feedback-btn {
+    background: rgba(20, 14, 10, 0.6);
+    color: #fff;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    padding: 8px 20px;
+    border-radius: 50px;
+    border: 1.5px solid #ff6b1a;
+    box-shadow: 0 0 12px rgba(255, 107, 26, 0.25);
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .nav-link.feedback-btn:hover {
+    background: #ff6b1a;
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 0 20px rgba(255, 107, 26, 0.6);
+  }
+
+  .nav-link.play-btn {
+    background: linear-gradient(135deg, #ff6b1a 0%, #ff4500 100%);
+    color: #fff;
+    text-decoration: none;
+    font-size: 15px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    padding: 9px 24px;
+    border-radius: 50px;
+    border: 1.5px solid #fff;
+    box-shadow: 0 0 16px rgba(255, 107, 26, 0.5);
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .nav-link.play-btn:hover {
+    transform: scale(1.05) translateY(-2px);
+    box-shadow: 0 0 24px rgba(255, 107, 26, 0.8), 0 6px 20px rgba(0,0,0,0.5);
+    border-color: #ffcc66;
+  }
+
+  .nav-page-label {
+    background: rgba(20, 14, 10, 0.6);
+    color: #fff;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    padding: 8px 20px;
+    border-radius: 50px;
+    border: 1.5px solid #ff6b1a;
+    box-shadow: 0 0 12px rgba(255, 107, 26, 0.25);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 30px 30px 40px;
+    position: relative;
+    z-index: 5;
+    flex: 1;
+  }
+
+  .hero-title {
+    font-size: clamp(30px, 7vw, 90px);
+    font-weight: 900;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    line-height: 1.1;
+    margin-bottom: 20px;
+    text-shadow: 0 4px 20px rgba(0,0,0,0.5);
+  }
+
+  .hero-title .orange {
+    color: #ff6b1a;
+  }
+
+  /* Анімований блок зі слоганом сервера */
+  .hero-slogan {
+    position: relative;
+    max-width: 860px;
+    margin-bottom: 24px;
+    padding: 20px 26px;
+    background: linear-gradient(135deg, rgba(255, 107, 26, 0.15) 0%, rgba(20, 14, 10, 0.85) 100%);
+    border: 2px solid rgba(255, 107, 26, 0.6);
+    border-radius: 20px;
+    backdrop-filter: blur(14px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(255, 107, 26, 0.15);
+    overflow: hidden;
+    animation: sloganGlow 4s ease-in-out infinite alternate;
+  }
+
+  .hero-slogan::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+      60deg,
+      transparent 30%,
+      rgba(255, 255, 255, 0.08) 50%,
+      transparent 70%
+    );
+    transform: rotate(30deg);
+    animation: lightShimmer 6s infinite linear;
+    pointer-events: none;
+  }
+
+  @keyframes sloganGlow {
+    0% {
+      border-color: rgba(255, 107, 26, 0.5);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5), 0 0 15px rgba(255, 107, 26, 0.2);
+    }
+    100% {
+      border-color: rgba(255, 140, 50, 0.9);
+      box-shadow: 0 10px 35px rgba(0, 0, 0, 0.6), 0 0 30px rgba(255, 107, 26, 0.45);
+    }
+  }
+
+  @keyframes lightShimmer {
+    0% { transform: translateX(-100%) rotate(30deg); }
+    100% { transform: translateX(100%) rotate(30deg); }
+  }
+
+  .slogan-text {
+    font-size: clamp(16px, 2.3vw, 21px);
+    font-weight: 600;
+    line-height: 1.5;
+    color: #f5f5f5;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.6);
+  }
+
+  .slogan-text .highlight {
+    color: #ff9f43;
+    font-weight: 800;
+    text-shadow: 0 0 12px rgba(255, 159, 67, 0.6);
+  }
+
+  /* Блок кнопок дій на головному екрані */
+  .hero-actions-container {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+  }
+
+  .hero-action-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 14px 32px;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 800;
+    font-size: 17px;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .hero-action-btn.play {
+    background: linear-gradient(135deg, #ff6b1a 0%, #ff4500 100%);
+    color: #fff;
+    border: 2px solid #fff;
+    box-shadow: 0 0 20px rgba(255, 107, 26, 0.6);
+  }
+
+  .hero-action-btn.play:hover {
+    transform: translateY(-3px) scale(1.04);
+    box-shadow: 0 0 30px rgba(255, 107, 26, 0.9), 0 8px 25px rgba(0, 0, 0, 0.5);
+    border-color: #ffcc66;
+  }
+
+  .hero-action-btn.feedback {
+    background: rgba(20, 14, 10, 0.7);
+    color: #fff;
+    border: 2px solid #ff6b1a;
+    backdrop-filter: blur(8px);
+    box-shadow: 0 0 16px rgba(255, 107, 26, 0.3);
+  }
+
+  .hero-action-btn.feedback:hover {
+    background: #ff6b1a;
+    color: #fff;
+    transform: translateY(-3px) scale(1.04);
+    box-shadow: 0 0 28px rgba(255, 107, 26, 0.75), 0 8px 25px rgba(0, 0, 0, 0.5);
+  }
+
+  /* HOME RULES (Кнопки правил на головному екрані з обведеним контуром) */
+  .home-rules {
+    width: 100%;
+    max-width: 860px;
+    margin: 10px 0 20px;
+    background: rgba(20, 14, 10, 0.72);
+    border: 2px solid rgba(255, 107, 26, 0.7);
+    border-radius: 28px;
+    padding: 28px 32px;
+    backdrop-filter: blur(12px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+  }
+
+  .home-rules-title {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font-size: clamp(22px, 4vw, 30px);
+    font-weight: 900;
+    color: #ff6b1a;
+    letter-spacing: 1.5px;
+    margin-bottom: 22px;
+    text-shadow: 0 0 15px rgba(255, 107, 26, 0.4);
+  }
+
+  .home-rules-title img {
+    width: 36px;
+    height: 36px;
+    object-fit: contain;
+  }
+
+  .home-rules-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .home-rules-list li {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font-size: clamp(16px, 2.5vw, 20px);
+    font-weight: 700;
+    line-height: 1.4;
+    color: #fff;
+    padding: 14px 22px;
+    background: rgba(20, 14, 10, 0.6);
+    border: 2px solid #ff6b1a;
+    border-radius: 16px;
+    cursor: pointer;
+    box-shadow: 0 0 12px rgba(255, 107, 26, 0.2);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .home-rules-list li:hover {
+    background: #ff6b1a;
+    color: #fff;
+    border-color: #ff6b1a;
+    transform: translateX(8px) scale(1.02);
+    box-shadow: 0 0 25px rgba(255, 107, 26, 0.6), 0 6px 20px rgba(0, 0, 0, 0.4);
+  }
+
+  .home-rules-num {
+    color: #ff6b1a;
+    font-weight: 900;
+    font-size: 18px;
+    min-width: 32px;
+    flex-shrink: 0;
+    transition: color 0.3s;
+  }
+
+  .home-rules-list li:hover .home-rules-num {
+    color: #fff;
+  }
+
+  /* Соціальні кнопки */
+  .social-buttons-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 22px;
+    margin-top: 32px;
+  }
+
+  .social-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 14px;
+    background: rgba(20, 14, 10, 0.6);
+    border: 3px solid #ff6b1a;
+    border-radius: 50px;
+    padding: 16px 34px;
+    color: #fff;
+    text-decoration: none;
+    font-size: 19px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    box-shadow: 0 0 16px rgba(255, 107, 26, 0.3);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .social-btn:hover {
+    background: #ff6b1a;
+    color: #fff;
+    transform: translateY(-4px) scale(1.04);
+    box-shadow: 0 0 28px rgba(255, 107, 26, 0.7), 0 10px 25px rgba(0, 0, 0, 0.5);
+  }
+
+  .social-btn-icon {
+    width: 30px;
+    height: 30px;
+    object-fit: contain;
+  }
+
+  /* Footer: Всі права захищені + зворотній зв'язок */
+  .site-footer {
+    width: 100%;
+    margin-top: 40px;
+    padding: 24px 20px;
+    background: rgba(10, 6, 4, 0.85);
+    border-top: 1px solid rgba(255, 107, 26, 0.35);
+    backdrop-filter: blur(10px);
+    text-align: center;
+    position: relative;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .site-footer p {
+    font-size: 15px;
+    color: rgba(255, 255, 255, 0.75);
+    letter-spacing: 1px;
+    font-weight: 500;
+  }
+
+  .site-footer .copyright-symbol {
+    color: #ff6b1a;
+    font-weight: 800;
+    margin-right: 4px;
+  }
+
+  .site-footer-feedback {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.6);
+  }
+
+  .site-footer-feedback a {
+    color: #ff9f43;
+    text-decoration: none;
+    font-weight: 700;
+    transition: all 0.2s;
+  }
+
+  .site-footer-feedback a:hover {
+    color: #fff;
+    text-decoration: underline;
+    text-shadow: 0 0 10px rgba(255, 107, 26, 0.7);
+  }
+
+  .cookie-popup {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background: rgba(20, 14, 10, 0.95);
+    border: 1px solid #ff6b1a;
+    border-radius: 20px;
+    padding: 25px;
+    max-width: 350px;
+    z-index: 100;
+    backdrop-filter: blur(10px);
+  }
+
+  .cookie-popup p {
+    margin-bottom: 15px;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .cookie-buttons {
+    display: flex;
+    gap: 10px;
+  }
+
+  .cookie-btn {
+    padding: 8px 20px;
+    border: none;
+    border-radius: 20px;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s;
+  }
+
+  .cookie-btn.accept {
+    background: #ff6b1a;
+    color: #fff;
+  }
+
+  .cookie-btn.decline {
+    background: transparent;
+    border: 1px solid #666;
+    color: #fff;
+  }
+
+  .cookie-btn:hover {
+    transform: scale(1.05);
+  }
+
+  .cookie-popup.hidden {
+    display: none;
+  }
+
+  /* Hamburger Button */
+  .hamburger-btn {
+    background: transparent;
+    border: 2px solid #ff6b1a;
+    border-radius: 12px;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+    padding: 8px;
+    transition: all 0.3s;
+    flex-shrink: 0;
+  }
+
+  .hamburger-btn:hover {
+    background: rgba(255, 107, 26, 0.2);
+    box-shadow: 0 0 12px rgba(255, 107, 26, 0.4);
+    transform: scale(1.05);
+  }
+
+  .hamburger-btn span {
+    display: block;
+    width: 22px;
+    height: 3px;
+    background: #ff6b1a;
+    border-radius: 2px;
+    transition: all 0.3s;
+  }
+
+  /* Side Drawer Overlay & Drawer */
+  .side-drawer-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+  }
+
+  .side-drawer-overlay.active {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .side-drawer {
+    position: fixed;
+    top: 0;
+    left: -340px;
+    width: 320px;
+    height: 100%;
+    background: rgba(20, 14, 10, 0.7);
+    border-right: 2px solid #ff6b1a;
+    backdrop-filter: blur(15px);
+    z-index: 1001;
+    transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+    box-shadow: 5px 0 25px rgba(0, 0, 0, 0.7);
+  }
+
+  .side-drawer.active {
+    left: 0;
+  }
+
+  .drawer-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 25px 20px;
+    border-bottom: 1px solid rgba(255, 107, 26, 0.3);
+  }
+
+  .drawer-header h3 {
+    font-size: 22px;
+    font-weight: 800;
+    color: #ff6b1a;
+    letter-spacing: 2px;
+  }
+
+  .drawer-close-btn {
+    background: transparent;
+    border: none;
+    color: #fff;
+    font-size: 28px;
+    cursor: pointer;
+    line-height: 1;
+    transition: color 0.3s;
+  }
+
+  .drawer-close-btn:hover {
+    color: #ff6b1a;
+  }
+
+  .drawer-body {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    overflow-y: auto;
+  }
+
+  .drawer-menu-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    width: 100%;
+    background: rgba(20, 14, 10, 0.6);
+    border: 2px solid #ff6b1a;
+    border-radius: 14px;
+    padding: 15px 18px;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    text-align: left;
+    box-shadow: 0 0 12px rgba(255, 107, 26, 0.25);
+    transition: all 0.3s;
+  }
+
+  .drawer-menu-item:hover {
+    background: #ff6b1a;
+    border-color: #ff6b1a;
+    transform: translateX(6px);
+    box-shadow: 0 4px 20px rgba(255, 107, 26, 0.5);
+  }
+
+  .drawer-item-icon {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+  }
+
+  /* Modal Windows */
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(8px);
+    z-index: 2000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  .modal-overlay.active .modal-content {
+    transform: scale(1);
+  }
+
+  .modal-overlay.active {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .modal-content {
+    background: rgba(20, 14, 10, 0.98);
+    border: 2px solid #ff6b1a;
+    border-radius: 24px;
+    max-width: 860px;
+    width: 100%;
+    max-height: 88vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.8), 0 0 30px rgba(255, 107, 26, 0.3);
+    transform: scale(0.9);
+    transition: transform 0.3s ease;
+  }
+
+  .modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 24px 30px;
+    border-bottom: 2px solid rgba(255, 107, 26, 0.3);
+  }
+
+  .modal-header h2 {
+    font-size: 24px;
+    font-weight: 900;
+    color: #ff6b1a;
+    letter-spacing: 2px;
+  }
+
+  .modal-close-btn {
+    background: transparent;
+    border: none;
+    color: #fff;
+    font-size: 32px;
+    cursor: pointer;
+    line-height: 1;
+    transition: color 0.3s;
+  }
+
+  .modal-close-btn:hover {
+    color: #ff6b1a;
+  }
+
+  .modal-body {
+    padding: 30px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .owner-section {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 107, 26, 0.25);
+    border-radius: 16px;
+    padding: 16px 20px;
+  }
+
+  .owner-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: 2px solid #ff6b1a;
+    object-fit: cover;
+    flex-shrink: 0;
+  }
+
+  .owner-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .owner-label {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.5);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .owner-name {
+    font-size: 18px;
+    font-weight: 700;
+    color: #ff6b1a;
+  }
+
+  .modal-body::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .modal-body::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+  }
+
+  .modal-body::-webkit-scrollbar-thumb {
+    background: #ff6b1a;
+    border-radius: 10px;
+  }
+
+  .rules-section {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 107, 26, 0.25);
+    border-radius: 16px;
+    padding: 20px;
+  }
+
+  .rules-section h3 {
+    font-size: 18px;
+    color: #ff6b1a;
+    margin-bottom: 12px;
+    letter-spacing: 1px;
+  }
+
+  .rules-section p {
+    font-size: 15px;
+    line-height: 1.6;
+    color: #ddd;
+    margin-bottom: 8px;
+  }
+
+  .rules-section p:last-child {
+    margin-bottom: 0;
+  }
+
+  .rules-quote {
+    border-left: 4px solid #ff6b1a;
+    background: rgba(255, 107, 26, 0.12);
+    padding: 16px 20px;
+    border-radius: 0 12px 12px 0;
+    font-style: italic;
+    color: #fff;
+    font-size: 16px;
+    line-height: 1.6;
+  }
+
+  /* Verification Modal Styles */
+  .modal-search-wrapper {
+    position: relative;
+    margin-bottom: 20px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+  }
+
+  .modal-search-icon {
+    position: absolute;
+    left: 18px;
+    width: 22px;
+    height: 22px;
+    object-fit: contain;
+    pointer-events: none;
+    opacity: 0.85;
+  }
+
+  .modal-search-input {
+    width: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    border: 2px solid #ff6b1a;
+    border-radius: 16px;
+    padding: 14px 20px 14px 52px;
+    color: #fff;
+    font-size: 16px;
+    font-family: inherit;
+    outline: none;
+    transition: all 0.3s;
+  }
+
+  .modal-search-input:focus {
+    box-shadow: 0 0 15px rgba(255, 107, 26, 0.4);
+    border-color: #ff6b1a;
+  }
+
+  .modal-search-input::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+  }
+
+  .verification-results {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .verification-hint {
+    text-align: center;
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 15px;
+    padding: 10px 0;
+  }
+
+  .player-card {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 107, 26, 0.3);
+    border-radius: 16px;
+    padding: 16px 20px;
+    transition: all 0.3s;
+  }
+
+  .player-card:hover {
+    border-color: #ff6b1a;
+    box-shadow: 0 4px 20px rgba(255, 107, 26, 0.2);
+  }
+
+  .player-nickname {
+    font-size: 19px;
+    font-weight: 800;
+    color: #fff;
+    margin-bottom: 6px;
+  }
+
+  .player-role {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.6);
+    margin-bottom: 6px;
+  }
+
+  .player-note {
+    font-size: 13px;
+    color: #ff6b1a;
+    margin-bottom: 6px;
+    font-style: italic;
+  }
+
+  .player-factions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .player-faction-badge {
+    background: #ff6b1a;
+    color: #fff;
+    font-weight: 700;
+    font-size: 13px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    letter-spacing: 1px;
+    display: inline-block;
+  }
+
+  .player-faction-badge.admin-badge {
+    background: linear-gradient(135deg, #ff4500 0%, #ff6b1a 100%);
+  }
+
+  .player-faction-badge.court-badge {
+    background: #c9a84c;
+  }
+
+  .player-faction-badge.police-badge {
+    background: #1a6bff;
+  }
+
+  .player-faction-badge.security-badge {
+    background: #8b0000;
+  }
+
+  .player-faction-badge.dru-badge {
+    background: linear-gradient(135deg, #2b2b2b 0%, #555 100%);
+    border: 1px solid #ff6b1a;
+  }
+
+  .no-results {
+    text-align: center;
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 15px;
+    padding: 20px 0;
+  }
+
+  /* FACTIONS DIRECTORY (Інтерактивний список фракцій без пошуку) */
+  .factions-directory-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .faction-accordion-item {
+    background: rgba(255, 255, 255, 0.04);
+    border: 2px solid rgba(255, 107, 26, 0.4);
+    border-radius: 18px;
+    padding: 18px 22px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .faction-accordion-item:hover {
+    border-color: #ff6b1a;
+    background: rgba(255, 107, 26, 0.08);
+    box-shadow: 0 4px 20px rgba(255, 107, 26, 0.3);
+    transform: translateY(-2px);
+  }
+
+  .faction-accordion-item.active {
+    border-color: #ff6b1a;
+    background: rgba(20, 14, 10, 0.9);
+    box-shadow: 0 0 25px rgba(255, 107, 26, 0.45);
+  }
+
+  .faction-item-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+  }
+
+  .faction-item-title-box {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .faction-item-title {
+    font-size: 19px;
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: 0.5px;
+  }
+
+  .faction-arrow {
+    font-size: 14px;
+    color: #ff6b1a;
+    transition: transform 0.3s;
+    flex-shrink: 0;
+  }
+
+  .faction-accordion-item.active .faction-arrow {
+    transform: rotate(180deg);
+  }
+
+  .faction-item-body {
+    display: none;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid rgba(255, 107, 26, 0.3);
+    animation: fadeIn 0.3s ease;
+  }
+
+  .faction-accordion-item.active .faction-item-body {
+    display: block;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .faction-block {
+    margin-bottom: 14px;
+    line-height: 1.6;
+    font-size: 15px;
+    color: #ddd;
+  }
+
+  .faction-block strong {
+    color: #ff9f43;
+  }
+
+  .faction-block ul {
+    margin-left: 20px;
+    margin-top: 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .faction-desc-box {
+    background: rgba(255, 107, 26, 0.08);
+    border-left: 3px solid #ff6b1a;
+    padding: 12px 16px;
+    border-radius: 0 10px 10px 0;
+    font-size: 15px;
+    line-height: 1.6;
+    color: #eee;
+    margin-bottom: 14px;
+  }
+
+  .faction-members-heading {
+    font-size: 16px;
+    font-weight: 700;
+    color: #ff6b1a;
+    margin-bottom: 10px;
+    letter-spacing: 1px;
+  }
+
+  .members-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 10px;
+  }
+
+  .member-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 12px;
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 10px;
+    flex-wrap: wrap;
+  }
+
+  .member-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #ff6b1a;
+    flex-shrink: 0;
+  }
+
+  .member-name {
+    font-weight: 700;
+    font-size: 15px;
+    color: #fff;
+  }
+
+  .member-role {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.5);
+    width: 100%;
+  }
+
+  .member-badge-green {
+    font-size: 12px;
+    color: #4caf50;
+    background: rgba(76, 175, 80, 0.15);
+    padding: 2px 8px;
+    border-radius: 6px;
+    margin-left: 6px;
+  }
+
+  @media (max-width: 820px) {
+    nav {
+      padding: 12px 18px;
+      margin: 14px auto;
+      width: calc(100% - 24px);
+    }
+    .container {
+      padding: 20px 16px 30px;
+    }
+    .hero-actions-container {
+      flex-direction: column;
+      align-items: stretch;
+    }
+    .hero-action-btn {
+      width: 100%;
+      text-align: center;
+    }
+    .home-rules {
+      padding: 20px 16px;
+      border-radius: 20px;
+    }
+    .modal-content {
+      max-height: 90vh;
+      border-radius: 20px;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="city-bg"></div>
+<div class="buildings-overlay"></div>
+<div class="window-lights"></div>
+
+<nav>
+  <div class="nav-inner-left">
+    <button class="hamburger-btn" id="menuToggleBtn" title="Меню">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+    <div class="logo">
+      <div class="logo-box">LEGACY RP</div>
+    </div>
+  </div>
+
+  <div class="nav-links">
+    <span class="nav-page-label">Legacy RP · Головна сторінка</span>
+  </div>
+</nav>
+
+<!-- Side Drawer Menu -->
+<div class="side-drawer-overlay" id="drawerOverlay"></div>
+<div class="side-drawer" id="sideDrawer">
+  <div class="drawer-header">
+    <h3>МЕНЮ</h3>
+    <button class="drawer-close-btn" id="drawerCloseBtn">&times;</button>
+  </div>
+  <div class="drawer-body">
+    <button class="drawer-menu-item" id="rulesBtn">
+      <img src="{F41B35DE-5532-4AC8-9BA5-0F8ED485B4BE}.png" alt="Правила" class="drawer-item-icon" />
+      Правила для адміністрації
+    </button>
+    <button class="drawer-menu-item" id="verificationBtn">
+      <img src="{48D7BABB-A509-4DF6-A882-C6183B75021A}.png" alt="Перевірка" class="drawer-item-icon" />
+      Перевірка гравців
+    </button>
+    <button class="drawer-menu-item" id="lawBtn">
+      <img src="ккл.png" alt="ККЛ" class="drawer-item-icon" />
+      ККЛ
+    </button>
+    <button class="drawer-menu-item" id="factionsBtn">
+      <img src="пошук_по_фракціям.png" alt="Фракції" class="drawer-item-icon" />
+      Фракції та Організації
+    </button>
+    <button class="drawer-menu-item" id="kpkBtn">
+      <img src="kpk.png" alt="КПК" class="drawer-item-icon" onerror="this.src='kpk.jpg'" />
+      КПК
+    </button>
+    <button class="drawer-menu-item" id="greenZonesBtn">
+      <img src="зелена_зона.png" alt="Зелені зони" class="drawer-item-icon" onerror="this.src='зелена_зона.jpg'" />
+      Зелені зони
+    </button>
+    <button class="drawer-menu-item" id="constitutionBtn">
+      <img src="конституція_легасі.png" alt="Конституція" class="drawer-item-icon" onerror="this.src='конституція_легасі.jpg'" />
+      Конституція LEGACY RP
+    </button>
+  </div>
+</div>
+
+<!-- Modal Window for Administration Rules -->
+<div class="modal-overlay" id="rulesModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>ПРАВИЛА АДМІНІСТРАЦІЇ</h2>
+      <button class="modal-close-btn" id="modalCloseBtn">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="owner-section">
+        <img src="owner.png" alt="Власник" class="owner-avatar" />
+        <div class="owner-info">
+          <span class="owner-label">Власник сервера</span>
+          <span class="owner-name">LMxDarvs</span>
+        </div>
+      </div>
+      <section class="rules-section">
+        <h3>1. Загальні положення</h3>
+        <p><strong>1.1.</strong> Адміністратор є представником адміністрації сервера та відповідає за порядок і дотримання правил.</p>
+        <p><strong>1.2.</strong> Адміністратор зобов'язаний діяти об'єктивно, спокійно та в інтересах сервера.</p>
+        <p><strong>1.3.</strong> Адмін-статус не дає права на особисті привілеї.</p>
+      </section>
+
+      <section class="rules-section">
+        <h3>2. Дотримання правил</h3>
+        <p><strong>2.1.</strong> Адміністратор зобов'язаний знати та дотримуватися правил сервера.</p>
+        <p><strong>2.2.</strong> Адміністратор не має права порушувати правила лише через свій статус.</p>
+        <p><strong>2.3.</strong> При зміні правил адміністратор зобов'язаний ознайомитися з оновленнями.</p>
+      </section>
+
+      <section class="rules-section">
+        <h3>3. Адміністративні права</h3>
+        <p><strong>3.1.</strong> Адмін-команди використовуються лише за службової необхідності.</p>
+        <p><strong>3.2.</strong> Заборонено використовувати права для розваги, тролінгу, помсти або отримання переваги.</p>
+        <p><strong>3.3.</strong> Заборонено використовувати адміністративні можливості для допомоги собі, друзям чи знайомим.</p>
+        <p><strong>3.4.</strong> Адміністратор використовує лише ті команди та можливості, які доступні його рівню.</p>
+      </section>
+
+      <section class="rules-section">
+        <h3>4. Покарання гравців</h3>
+        <p><strong>4.1.</strong> Покарання повинно відповідати порушенню.</p>
+        <p><strong>4.2.</strong> Заборонено карати гравців без достатніх підстав або доказів.</p>
+        <p><strong>4.3.</strong> При серйозних покараннях адміністратор повинен вказати чітку причину.</p>
+        <p><strong>4.4.</strong> Адміністратор не повинен розглядати власну скаргу або ситуацію, у якій він є стороною конфлікту.</p>
+      </section>
+
+      <section class="rules-section">
+        <h3>5. RP та NON-RP</h3>
+        <p><strong>5.1.</strong> Під час виконання адміністративних обов'язків адміністратор діє як NON-RP особа.</p>
+        <p><strong>5.2.</strong> Адміністратор не повинен використовувати службову інформацію для переваги свого RP-персонажа.</p>
+        <p><strong>5.3.</strong> Якщо адміністратор грає RP без використання адмін-можливостей — він діє як звичайний гравець.</p>
+      </section>
+
+      <section class="rules-section">
+        <h3>6. Поведінка та спілкування</h3>
+        <p><strong>6.1.</strong> Заборонені образи, провокації, токсичність та приниження гравців.</p>
+        <p><strong>6.2.</strong> Адміністратор повинен спілкуватися коректно та не створювати конфліктів.</p>
+        <p><strong>6.3.</strong> Особисті симпатії, знайомства чи конфлікти не повинні впливати на адміністративні рішення.</p>
+      </section>
+
+      <section class="rules-section">
+        <h3>7. Службова інформація</h3>
+        <p><strong>7.1.</strong> Заборонено розголошувати внутрішню інформацію адміністрації без дозволу керівництва.</p>
+        <p><strong>7.2.</strong> Заборонено передавати стороннім особам службову інформацію, отриману під час виконання обов'язків.</p>
+      </section>
+
+      <section class="rules-section">
+        <h3>8. Відповідальність</h3>
+        <p><strong>8.1.</strong> Адміністратор несе відповідальність за зловживання своїми повноваженнями.</p>
+        <p><strong>8.2.</strong> За порушення правил можуть застосовуватися: попередження, зниження посади, позбавлення адміністративних прав або зняття з посади.</p>
+        <p><strong>8.3.</strong> У тяжких випадках адміністрація може застосувати додаткове покарання відповідно до правил сервера.</p>
+      </section>
+
+      <section class="rules-section">
+        <h3>9. Головне правило</h3>
+        <blockquote class="rules-quote">
+          Адміністратор — це не привілей, а відповідальність.<br>
+          Повноваження надаються для підтримки порядку, а не для особистої вигоди.
+        </blockquote>
+      </section>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Window for Server Rules -->
+<div class="modal-overlay" id="serverRulesModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>🇺🇦 ПРАВИЛА LEGACY RP | UKRAINE</h2>
+      <button class="modal-close-btn" id="serverRulesModalCloseBtn">&times;</button>
+    </div>
+    <div class="modal-body">
+      <section class="rules-section" id="rule-section-1">
+        <h3>1. RP / NON-RP</h3>
+        <p><strong>1.1. Основні терміни</strong></p>
+        <p><strong>NonRP</strong> — дії, які суперечать логіці або атмосфері рольової гри.</p>
+        <p><strong>RDM (Random DeathMatch)</strong> — безпричинне масове або хаотичне вбивство/напад на гравців.</p>
+        <p><strong>DM (DeathMatch)</strong> — напад або використання зброї проти гравця без достатньої RP-причини.</p>
+        <p><strong>MG (MetaGaming)</strong> — використання інформації, отриманої поза грою, у RP-ситуації.</p>
+        <p><strong>PG (PowerGaming)</strong> — нереалістичні дії або нав'язування іншому гравцю результату RP-ситуації.</p>
+        <p><strong>FearRP</strong> — ігнорування загрози життю персонажа. Гравець повинен враховувати небезпеку для свого персонажа.</p>
+        <p><strong>Combat Log</strong> — вихід із гри під час активної RP-ситуації, переслідування, затримання або бою.</p>
+        <p><strong>Cuff Rush</strong> — миттєве використання наручників без нормальної RP-взаємодії.</p>
+        <p><strong>RK (Revenge Kill)</strong> — помста гравцю після смерті/відродження персонажа без RP-підстави.</p>
+        <p><strong>Bunny Hop / Bhop</strong> — серійні стрибки для отримання переваги. Дозволені в межах ігрової механіки, але заборонено використовувати їх для навмисного зриву RP.</p>
+        <p><strong>1.2. RP-команди</strong></p>
+        <p>Команди /me, /do використовуються для опису RP-дій та ситуацій.</p>
+        <p>Заборонено використовувати RP-команди для обману, нав'язування результату іншому гравцю або отримання нереалістичної переваги.</p>
+        <p><strong>1.3. Покарання</strong></p>
+        <p>За RP-порушення адміністрація може застосувати: попередження, депорт або бан.</p>
+        <p><strong>DM</strong> — бан від 2 діб.</p>
+        <p><strong>RDM</strong> — бан від 5 діб.</p>
+      </section>
+
+      <section class="rules-section" id="rule-section-2">
+        <h3>2. ЗБРОЯ ТА СПЕЦІАЛЬНІ ЗАСОБИ (для простих гравців)</h3>
+        <p><strong>2.1. Носіння зброї у публічних місцях</strong></p>
+        <p>Заборонено відкрито носити або демонструвати зброю у людних/публічних місцях.</p>
+        <p>Покарання: тюремний строк.</p>
+        <p><strong>2.2. Нелегальне володіння зброєю</strong></p>
+        <p>Заборонено зберігати, носити, передавати або використовувати зброю без відповідної ліцензії.</p>
+        <p>Покарання: тюремний строк та конфіскація зброї.</p>
+        <p><strong>2.3. Неправомірне використання зброї</strong></p>
+        <p>Заборонено стріляти, нападати на інших гравців, стріляти в повітря або використовувати зброю для залякування.</p>
+        <p>Покарання: тюремний строк та можливий штраф до 8 000€.</p>
+        <p>«Масове або хаотичне використання зброї без RP-причини додатково розглядається як RDM.»</p>
+        <p>Покарання: конфіскація зброї, штраф до 16 000€ або депорт до 3 діб.</p>
+        <p><strong>2.4. Передача зброї</strong></p>
+        <p>Заборонено передавати, продавати зброю іншим гравцям.</p>
+        <p>Покарання: конфіскація зброї, тюремний строк.</p>
+        <p><strong>2.5. Зброя у зелених та безпечних зонах</strong></p>
+        <p>Заборонено діставати, демонструвати або використовувати зброю у зелених/безпечних зонах без обґрунтованої RP-причини.</p>
+        <p>Покарання: депорт до 3 діб. У випадку стрільби або масового порушення додатково може застосовуватися покарання за DM/RDM.</p>
+        <p><strong>2.6. Вибухові засоби</strong></p>
+        <p>Заборонено використовувати вибухові засоби без RP-причини, у зелених зонах або для навмисного зриву RP-ситуацій.</p>
+        <p>Покарання: тюремний строк, конфіскація. Масове використання вибухівки може каратися баном до 7 діб.</p>
+      </section>
+
+      <section class="rules-section" id="rule-section-3">
+        <h3>3. ЗЛОЧИНИ ТА RP-СИТУАЦІЇ</h3>
+        <p><strong>3.1.</strong> Пограбування дозволені лише тих об'єктів, які передбачені механікою.</p>
+        <p><strong>3.2.</strong> Заборонено нападати, грабувати або викрадати гравців без RP-причини.</p>
+        <p><strong>3.3.</strong> Заборонено навмисно допомагати іншому гравцю уникати покарання, якщо така допомога порушує правила сервера.</p>
+        <p><strong>3.4.</strong> Заборонено навмисно провокувати інших гравців на порушення правил.</p>
+      </section>
+
+      <section class="rules-section" id="rule-section-4">
+        <h3>4. ПРАВООХОРОНЦІ ТА ДЕРЖАВНІ СЛУЖБИ</h3>
+        <p><strong>4.1.</strong> Правоохоронці зобов'язані діяти в межах своїх повноважень та RP-логіки.</p>
+        <p><strong>4.2.</strong> Заборонено безпідставно затримувати, штрафувати, обшукувати або застосовувати силу до гравців. Покарання: бан до 5 діб.</p>
+        <p><strong>4.3.</strong> Заборонено безпідставно використовувати зброю, тазер, наручники та шипи. Покарання: бан до 4 діб або штраф 16к.</p>
+        <p><strong>4.4.</strong> Перед застосуванням сили повинна існувати відповідна RP-причина.</p>
+        <p><strong>4.5.</strong> Правоохоронець під час взаємодії з гравцем перш за все повинен представитися та повідомити своє звання. Порушення карається штрафом 8к/варном.</p>
+        <p><strong>4.6.</strong> Заборонено використовувати службові повноваження для особистої вигоди. Покарання: депорт до 3 діб.</p>
+        <p><strong>4.7.</strong> Інформація про розшук, особу або транспорт повинна отримуватися через доступні RP-способи (перевірка документів, пробиття номера) з RP-відіграшем. Використання інформації з OOC-джерел у RP вважається MG.</p>
+        <p><strong>4.8.</strong> Незатверджені працівники правоохоронних органів не мають права використовувати службові повноваження, доступні лише офіційним співробітникам.</p>
+      </section>
+
+      <section class="rules-section" id="rule-section-5">
+        <h3>5. КПП ТА БЛОКПОСТИ</h3>
+        <p><strong>5.1.</strong> КПП та блокпости дозволені лише у відповідних місцях та за наявності RP-причини.</p>
+        <p><strong>5.2.</strong> Заборонено повністю блокувати дороги, мости, лікарні та інші важливі об'єкти без необхідності.</p>
+        <p><strong>5.3.</strong> Екстреним службам повинен залишатися вільний проїзд.</p>
+        <p><strong>5.4.</strong> Гравці повинні виконувати законні вимоги правоохоронців під час перевірки.</p>
+        <p><strong>5.5.</strong> Безпідставне використання шипів заборонене.</p>
+      </section>
+
+      <section class="rules-section" id="rule-section-6">
+        <h3>6. ТРАНСПОРТ</h3>
+        <p><strong>6.1.</strong> Заборонено навмисно використовувати транспорт для DM, RDM або зриву RP.</p>
+        <p><strong>6.2.</strong> Заборонено навмисно таранити гравців або транспорт без RP-причини.</p>
+        <p><strong>6.3.</strong> Заборонено використовувати адміністративний транспорт у звичайних RP-ситуаціях.</p>
+        <p><strong>6.4.</strong> Заборонено використовувати номерні знаки з назвами адміністрації/державних структур або образливими написами.</p>
+      </section>
+
+      <section class="rules-section" id="rule-section-7">
+        <h3>7. ПОРЯДОК НА СЕРВЕРІ</h3>
+        <p><strong>7.1.</strong> Заборонені образи, булінг, погрози, дискримінація та навмисна токсична поведінка.</p>
+        <p><strong>7.2.</strong> Заборонено навмисно зривати RP-ситуації, івенти або роботу інших гравців.</p>
+        <p><strong>7.3.</strong> Заборонено створювати масові конфлікти або організовувати масові порушення правил.</p>
+        <p><strong>7.4.</strong> Заборонено навмисно заважати роботі поліції, медиків, пожежників та інших служб без RP-причини.</p>
+        <p><strong>7.5.</strong> У голосовому чаті заборонені образи, крики, навмисно дратівливі звуки та спам.</p>
+      </section>
+
+      <section class="rules-section" id="rule-section-8">
+        <h3>8. ЧИТИ, БАГИ ТА ОБХІД ПОКАРАННЯ</h3>
+        <p><strong>8.1.</strong> Заборонено використовувати чити, експлойти або стороннє програмне забезпечення для отримання переваги. Покарання: перманентний бан.</p>
+        <p><strong>8.2.</strong> Заборонено навмисно використовувати баги та помилки сервера для отримання переваги. Покарання: бан від 7 діб до перманентного.</p>
+        <p><strong>8.3.</strong> Заборонено передавати іншим гравцям інформацію або способи використання багів для отримання переваги.</p>
+        <p><strong>8.4.</strong> Заборонено уникати покарання шляхом виходу із сервера, зміни акаунта або іншими способами.</p>
+      </section>
+
+      <section class="rules-section" id="rule-section-9">
+        <h3>9. АДМІНІСТРАЦІЯ</h3>
+        <p><strong>9.1.</strong> Рішення адміністрації є обов'язковими під час розгляду порушень.</p>
+        <p><strong>9.2.</strong> Заборонено сперечатися з адміністрацією під час розгляду ситуації. Оскарження здійснюється після завершення ситуації.</p>
+        <p><strong>9.3.</strong> Заборонено навмисно приховувати порушення або вводити адміністрацію в оману.</p>
+        <p><strong>9.4.</strong> Адміністраторам заборонено використовувати службові повноваження для особистої вигоди.</p>
+        <p><strong>9.5.</strong> Адміністрація має право застосувати суворіше покарання у випадку масових, повторних або особливо грубих порушень.</p>
+      </section>
+
+      <section class="rules-section" id="rule-section-10">
+        <h3>10. ЗАГАЛЬНІ ПОЛОЖЕННЯ</h3>
+        <p><strong>10.1.</strong> Гравці повинні дотримуватися здорового глузду та підтримувати RP-атмосферу сервера.</p>
+        <p><strong>10.2.</strong> Якщо ситуація прямо не описана в правилах, адміністрація оцінює її відповідно до логіки RP та загального духу правил.</p>
+        <p><strong>10.3.</strong> Навмисний обхід правил не звільняє від відповідальності.</p>
+        <p><strong>10.4.</strong> Повторне порушення одного або декількох правил може призвести до збільшення покарання.</p>
+        <p><strong>10.5.</strong> У разі масового порушення правил адміністрація має право тимчасово обмежити участь порушників у RP або видати бан.</p>
+      </section>
+
+      <section class="rules-section" id="rule-section-11">
+        <h3>11. ПРОПАГАНДА</h3>
+        <p>На сервері забороняється будь-яка пропаганда, підтримка або поширення ідеологій та символіки, що пропагують агресію, ненависть, насильство або тоталітарні режими.</p>
+        <p><strong>Заборонено:</strong></p>
+        <p>— пропагувати або підтримувати російську агресію та російську пропаганду;</p>
+        <p>— виправдовувати або підтримувати дії держави-агресора;</p>
+        <p>— використовувати символіку, пов'язану з підтримкою російської агресії;</p>
+        <p>— пропагувати нацизм, фашизм та інші тоталітарні ідеології;</p>
+        <p>— використовувати нацистську символіку, жести, знаки або інші матеріали з метою пропаганди;</p>
+        <p>— поширювати матеріали, що містять пропаганду ненависті або заклики до насильства.</p>
+        <p><strong>Покарання:</strong> безстрокова депортація.</p>
+      </section>
+
+      <section class="rules-section" id="rule-section-12">
+        <h3>12. ПРАВИЛА ДОРОЖНЬОГО РУХУ (ПДР)</h3>
+        <p><strong>12.1. Проїзд на заборонний сигнал</strong> — автоштраф 100€ (систематично: до 3000€).</p>
+        <p><strong>12.2. Перевищення швидкості</strong> — штраф 3000€.</p>
+        <p><strong>12.3. Небезпечне керування</strong> — штраф 4000€ або попередження.</p>
+        <p><strong>12.4. Рух зустрічною смугою</strong> — штраф 3000€ або попередження.</p>
+        <p><strong>12.5. Порушення правил обгону</strong> — штраф 3000€ або попередження.</p>
+        <p><strong>12.6. Порушення правил кругового руху</strong> — штраф 3000€ або попередження.</p>
+        <p><strong>12.7. Неправильний поворот</strong> — штраф 2000€ або попередження.</p>
+        <p><strong>12.8. Неправильне розташування після повороту</strong> — штраф 2000€ або попередження.</p>
+        <p><strong>12.9. Невикористання поворотників</strong> — штраф 1500€ або попередження.</p>
+        <p><strong>12.10. Недотримання дистанції</strong> — штраф 2000€ або попередження.</p>
+        <p><strong>12.11. Порушення правил залізничного переїзду</strong> — штраф 3000€ або попередження.</p>
+        <p><strong>12.12. Ненадання переваги пішоходам</strong> — штраф 3000€ або попередження.</p>
+        <p><strong>12.13. Рух у заборонених зонах (тротуари, газони)</strong> — штраф 3000€ або попередження.</p>
+        <p><strong>12.14. Рух заднім ходом у небезпечних місцях</strong> — штраф 3000€ або попередження.</p>
+        <p><strong>12.15. Заборонений дрифт на дорогах</strong> — штраф 6000€ або попередження.</p>
+        <p><strong>12.16. Безпідставний звуковий сигнал</strong> — штраф 4000€ або попередження.</p>
+        <p><strong>12.17. Невикористання фар (з 16:00 до 06:00 / за містом)</strong> — штраф 2000€ або попередження.</p>
+        <p><strong>12.18. Заборонене паркування</strong> — штраф 3000€ або попередження.</p>
+        <p><strong>12.19. Небезпечний розворот</strong> — штраф 2000€ або попередження.</p>
+        <p><strong>12.20. Неправильна вимушена зупинка</strong> — штраф 2000€ або попередження.</p>
+        <p><strong>12.21. Рух на несправному транспорті</strong> — штраф 4000€ або попередження.</p>
+        <p><strong>12.22. Посадка/висадка пасажирів у заборонених місцях</strong> — штраф 3000€ або попередження.</p>
+        <p><strong>12.23. Ненадання переваги громадському транспорту</strong> — штраф 4000€ або депорт до 1 доби.</p>
+        <p><strong>12.24. Перешкоджання спецтранспорту</strong> — штраф 6000€ або депорт до 2 діб.</p>
+        <p><strong>12.25. Рух у колоні спецтранспорту</strong> — штраф 6000€ або попередження.</p>
+        <p><strong>12.26. Невиконання сигналів регулювальника</strong> — штраф 6000€ або депорт до 1 доби.</p>
+        <p><strong>12.27. Недозволений в'їзд на територію установ</strong> — штраф 6000€.</p>
+        <p><strong>12.28. ДТП та залишення місця пригоди</strong> — штраф 4000€ або попередження + компенсація збитків.</p>
+        <p><strong>12.29. Порушення правил переходу дороги пішоходом</strong> — штраф 2000€ або попередження.</p>
+        <p><strong>12.30. Заборонені номерні знаки</strong> — штраф 6000€ або попередження.</p>
+        <p><strong>12.31. Приховування номерного знака</strong> — штраф 6000€ або попередження.</p>
+      </section>
+
+      <section class="rules-section" id="rule-section-13">
+        <h3>13. ЗЕЛЕНІ ЗОНИ</h3>
+        <p>Зелені зони — це місця, де гравці можуть перебувати без ризику безпідставних нападів, перестрілок та інших конфліктних ситуацій (Лікарня, Поліцейська дільниця, Суд).</p>
+        <p>Порушення правил зеленої зони карається депортом до 5 діб.</p>
+      </section>
+
+      <section class="rules-section" id="rule-section-14">
+        <h3>14. ЗОВНІШНІЙ ВИГЛЯД ТА СКІНИ</h3>
+        <p>Зовнішній вигляд персонажа має відповідати правилам сервера та не порушувати атмосферу RolePlay.</p>
+        <p><strong>Заборонено:</strong></p>
+        <p>— Використовувати скіни із фашистською, нацистською, російською військовою або іншою забороненою пропагандистською символікою.</p>
+        <p>— Використовувати образи, які можуть містити образливу, провокаційну або пропагандистську символіку.</p>
+        <p>— Використовувати скіни тварин або інші нестандартні образи під час виконання обов'язків у державних фракціях.</p>
+        <p><strong>Скіни тварин та аніматори:</strong></p>
+        <p>Якщо гравець використовує скін тварини, він зобов'язаний відповідно до нього відігравати персонажа. Такий гравець не може: перебувати у розшуку; вступати до державних фракцій; виконувати службові обов'язки; використовувати такий скін для участі у фракційній діяльності.</p>
+        <p>Це правило також поширюється на аніматорів тварин. Навіть якщо гравець використовує аніматора, який візуально перетворює персонажа на тварину, обмеження залишаються чинними. Після зміни на звичайний скін гравець може повернутися до стандартної RolePlay-діяльності.</p>
+        <p><strong>Покарання:</strong> за порушення правил зовнішнього вигляду та використання заборонених скінів — депорт до 5 діб.</p>
+      </section>
+
+      <section class="rules-section">
+        <h3>⚠️ ВАЖЛИВО</h3>
+        <blockquote class="rules-quote">
+          RP — це не максимальна реалістичність. Це адекватна рольова поведінка в межах механіки сервера.<br><br>
+          Головний принцип Legacy RP:<br>
+          «Не шукай лазівку в правилах — грай адекватно та не псуй гру іншим.»
+        </blockquote>
+      </section>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Window for Green Zones (Зелені зони) -->
+<div class="modal-overlay" id="greenZonesModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>🟢 ЗЕЛЕНІ ЗОНИ</h2>
+      <button class="modal-close-btn" id="greenZonesModalCloseBtn">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="rules-section">
+        <h3>Що таке зелені зони</h3>
+        <p>Зелені зони — це місця, де гравці можуть перебувати без ризику безпідставних нападів, перестрілок та інших конфліктних ситуацій.</p>
+        <p><strong>До зелених зон на сервері належать:</strong></p>
+        <ul>
+          <li>Лікарня</li>
+          <li>Поліцейська дільниця</li>
+          <li>Суд</li>
+        </ul>
+        <p style="margin-top: 8px;">Територія зеленої зони охоплює саму будівлю та прилеглу до неї територію, позначену на карті.</p>
+      </div>
+
+      <section class="rules-section">
+        <h3>У зеленій зоні заборонено:</h3>
+        <p>— Перебувати гравцю, який знаходиться в розшуку, без обґрунтованої RP-причини.</p>
+        <p>— Діставати, демонструвати чи використовувати зброю.</p>
+        <p>— Влаштовувати бійки, провокувати інших гравців або навмисно створювати конфліктні ситуації.</p>
+        <p>— Здійснювати злочинні дії або використовувати зелену зону як місце для втечі чи переховування від правоохоронців.</p>
+        <p>— Стріляти або будь-яким іншим способом проявляти агресію щодо інших гравців.</p>
+      </section>
+
+      <section class="rules-section">
+        <h3>Особливі випадки</h3>
+        <p><strong>Перебування в зеленій зоні допускається, якщо гравець:</strong></p>
+        <p>— має законну ліцензію на зброю;</p>
+        <p>— був затриманий та перебуває під арештом;</p>
+        <p>— отримує медичну допомогу;</p>
+        <p>— щойно з'явився на сервері.</p>
+        <p><em>Після появи на сервері гравцю надається до 1 хвилини, щоб залишити зелену зону, якщо для його перебування немає іншої законної причини.</em></p>
+      </section>
+
+      <section class="rules-section">
+        <h3>Дії правоохоронців</h3>
+        <p>Правоохоронці не мають права безпідставно затримувати або перевіряти гравців лише через їхнє перебування в зеленій зоні.</p>
+        <p><strong>Затримання можливе, якщо:</strong></p>
+        <p>— гравець безпосередньо в зеленій зоні порушує правила або вчиняє правопорушення;</p>
+        <p>— на гравця офіційно оголошено розшук та є відповідна RP-причина для його затримання.</p>
+        <p>Якщо гравець перебуває в зеленій зоні для отримання медичної допомоги, правоохоронці повинні дочекатися його виходу із зони, якщо ситуація не становить безпосередньої загрози.</p>
+        <p>Перевірка особи за Username допускається лише за наявності обґрунтованої RP-причини.</p>
+      </section>
+
+      <section class="rules-section">
+        <h3>Зброя</h3>
+        <p>Використання зброї в зеленій зоні заборонене навіть за наявності відповідної ліцензії.</p>
+        <p>Якщо гравець використав зброю в зеленій зоні та мав ліцензію, до нього застосовується:</p>
+        <p>— <strong>конфіскація зброї</strong>;</p>
+        <p>— <strong>штраф 8 000€</strong>.</p>
+      </section>
+
+      <section class="rules-section">
+        <h3>Покарання</h3>
+        <p><strong>Основне порушення правил зеленої зони:</strong> тимчасовий депорт до 5 діб.</p>
+        <p><strong>Перебування в зеленій зоні під час розшуку:</strong> попередження або депорт до 2 діб залежно від ситуації.</p>
+        <blockquote class="rules-quote" style="margin-top: 10px;">
+          «Приклад порушення: гравець дістає зброю біля лікарні, погрожує іншому гравцю та провокує конфлікт.»<br><br>
+          «Правильна поведінка: у зеленій зоні дотримуйтесь спокою, не провокуйте інших та не використовуйте зброю без дозволеної RP-причини.»
+        </blockquote>
+      </section>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Window for Constitution (Конституція LEGACY RP) -->
+<div class="modal-overlay" id="constitutionModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>📜 КОНСТИТУЦІЯ LEGACY RP</h2>
+      <button class="modal-close-btn" id="constitutionModalCloseBtn">&times;</button>
+    </div>
+    <div class="modal-body">
+      <section class="rules-section">
+        <h3>РОЗДІЛ I. ЗАГАЛЬНІ ПОЛОЖЕННЯ</h3>
+        <p><strong>Стаття 1. Основи сервера</strong></p>
+        <p>1. LEGACY RP — RolePlay-сервер, на якому основою взаємодії між гравцями є дотримання правил, законів та RolePlay-атмосфери.</p>
+        <p>2. Конституція є основним нормативним документом сервера та має найвищу юридичну силу серед внутрішніх нормативних актів.</p>
+        <p>3. Усі правила, кодекси та нормативні документи сервера не можуть суперечити Конституції.</p>
+        <p>4. Незнання положень Конституції не звільняє гравця від відповідальності за їх порушення.</p>
+        <p><strong>Стаття 2. Державна мова</strong></p>
+        <p>1. Основною мовою сервера є українська мова.</p>
+        <p>2. Державні органи, офіційні документи, нормативні акти та службова комунікація повинні вестися українською мовою.</p>
+        <p>3. Використання інших мов у неофіційному спілкуванні між гравцями не забороняється, якщо це не порушує правила сервера.</p>
+        <p><strong>Стаття 3. Рівність</strong></p>
+        <p>1. Усі гравці мають рівні права та свободи незалежно від їхнього статусу, фракції, посади, рівня чи інших обставин.</p>
+        <p>2. Забороняється дискримінація, переслідування або приниження гравців.</p>
+        <p>3. Посада або високий ранг не дають права порушувати Конституцію чи правила сервера.</p>
+      </section>
+
+      <section class="rules-section">
+        <h3>РОЗДІЛ II. ПРАВА ТА СВОБОДИ ГРОМАДЯН</h3>
+        <p><strong>Стаття 4. Основні права</strong></p>
+        <p>Кожен гравець має право на:</p>
+        <p>1. Безпечну участь у грі.</p>
+        <p>2. Свободу слова в межах правил сервера.</p>
+        <p>3. Захист від необґрунтованого переслідування.</p>
+        <p>4. Отримання інформації про причину застосованих до нього заходів.</p>
+        <p>5. Оскарження дій інших гравців, представників фракцій та адміністрації у встановленому порядку.</p>
+        <p>6. Справедливий розгляд скарг та звернень.</p>
+        <p>7. Вільний вибір дозволеної діяльності та фракції.</p>
+        <p><strong>Стаття 5. Недоторканність гравця</strong></p>
+        <p>1. Ніхто не може безпідставно переслідувати, затримувати або карати гравця.</p>
+        <p>2. Будь-які обмеження прав повинні мати відповідну RP-причину або передбачатися правилами сервера.</p>
+        <p>3. Забороняється використовувати службове становище для особистої вигоди або помсти.</p>
+      </section>
+
+      <section class="rules-section">
+        <h3>РОЗДІЛ III. ЗАТРИМАННЯ ТА ПРАВА ЗАТРИМАНИХ</h3>
+        <p><strong>Стаття 6. Причина затримання</strong></p>
+        <p>1. Затриманий має право знати причину свого затримання.</p>
+        <p>2. Представник правоохоронного органу зобов'язаний повідомити причину затримання.</p>
+        <p>3. Причина повинна бути пов'язана з конкретним правопорушенням або іншою законною підставою для затримання.</p>
+        <p><strong>Стаття 7. Права та обов'язки затриманого</strong></p>
+        <p>1. Затриманий має право знати свої права та обов'язки.</p>
+        <p>2. На вимогу затриманого працівник правоохоронного органу повинен повідомити йому його права та обов'язки.</p>
+        <p>3. Затриманий зобов'язаний виконувати законні вимоги правоохоронців та не чинити опір затриманню.</p>
+        <p>4. Забороняється навмисно приховувати від затриманого інформацію про його права та підстави затримання.</p>
+      </section>
+
+      <section class="rules-section">
+        <h3>РОЗДІЛ IV. ДЕРЖАВНІ ОРГАНИ</h3>
+        <p><strong>Стаття 8. Законність діяльності державних органів</strong></p>
+        <p>1. Державні фракції здійснюють свою діяльність відповідно до Конституції, кодексів, правил та інших нормативних документів сервера.</p>
+        <p>2. Представники державних органів зобов'язані діяти в межах своїх повноважень.</p>
+        <p>3. Забороняється перевищувати службові повноваження або використовувати посаду всупереч інтересам сервера.</p>
+        <p>4. Наказ керівника не може бути підставою для порушення Конституції або правил сервера.</p>
+        <p><strong>Стаття 9. Правоохоронні органи</strong></p>
+        <p>1. Правоохоронні органи відповідають за підтримання порядку та забезпечення дотримання законів сервера.</p>
+        <p>2. Застосування сили, затримання та інші заходи повинні мати законну або обґрунтовану RP-підставу.</p>
+        <p>3. Працівникам правоохоронних органів заборонено безпідставно переслідувати громадян або використовувати службові повноваження у власних цілях.</p>
+      </section>
+
+      <section class="rules-section">
+        <h3>РОЗДІЛ V. СУДОВА СИСТЕМА</h3>
+        <p><strong>Стаття 10. Суд</strong></p>
+        <p>1. Суд здійснює розгляд справ відповідно до Конституції та законодавства сервера.</p>
+        <p>2. Рішення суду повинні ґрунтуватися на наявних доказах та чинних нормативних документах.</p>
+        <p>3. Учасники судового процесу мають право на справедливий розгляд справи.</p>
+        <p>4. Забороняється навмисно перешкоджати роботі суду або впливати на суддю з метою отримання незаконного рішення.</p>
+      </section>
+
+      <section class="rules-section">
+        <h3>РОЗДІЛ VI. ВЛАСНИК СЕРВЕРА</h3>
+        <p><strong>Стаття 11. Найвища адміністративна влада</strong></p>
+        <p>1. Власник LEGACY RP є найвищою посадовою особою сервера.</p>
+        <p>2. Власник має остаточне право приймати рішення щодо функціонування сервера.</p>
+        <p>3. Власник має право:</p>
+        <p>— затверджувати, змінювати або скасовувати правила сервера;</p>
+        <p>— створювати та ліквідовувати фракції й організації;</p>
+        <p>— призначати або звільняти керівників державних та інших структур;</p>
+        <p>— змінювати систему покарань та повноважень;</p>
+        <p>— втручатися в роботу державних органів у разі необхідності;</p>
+        <p>— приймати остаточні рішення у спірних ситуаціях;</p>
+        <p>— застосовувати адміністративні заходи для забезпечення стабільної роботи сервера.</p>
+        <p>4. Рішення власника є остаточним у межах адміністративної системи сервера.</p>
+        <p>5. Власник може вносити зміни до Конституції, правил та інших нормативних документів.</p>
+        <p><strong>Стаття 12. Адміністрація сервера</strong></p>
+        <p>1. Адміністрація діє в межах наданих їй повноважень.</p>
+        <p>2. Адміністратори мають право втручатися у ситуації, які порушують правила сервера або загрожують його нормальному функціонуванню.</p>
+        <p>3. Адміністрація має право застосовувати покарання відповідно до правил сервера.</p>
+        <p>4. У виняткових випадках адміністрація може застосувати інше покарання, якщо стандартна санкція не відповідає тяжкості порушення.</p>
+      </section>
+
+      <section class="rules-section">
+        <h3>РОЗДІЛ VII. ОБОВ'ЯЗКИ ГРОМАДЯН</h3>
+        <p><strong>Стаття 13. Основні обов'язки</strong></p>
+        <p>Кожен гравець зобов'язаний:</p>
+        <p>1. Дотримуватися Конституції та правил сервера.</p>
+        <p>2. Поважати інших учасників спільноти.</p>
+        <p>3. Дотримуватися встановлених законів та нормативних документів.</p>
+        <p>4. Виконувати законні вимоги представників державних органів.</p>
+        <p>5. Не використовувати баги, стороннє програмне забезпечення або інші заборонені засоби для отримання переваги.</p>
+        <p>6. Не перешкоджати нормальній грі інших учасників.</p>
+        <p>7. Дотримуватися встановлених RolePlay-правил.</p>
+      </section>
+
+      <section class="rules-section">
+        <h3>РОЗДІЛ VIII. ЗМІНА КОНСТИТУЦІЇ</h3>
+        <p><strong>Стаття 14. Внесення змін</strong></p>
+        <p>1. Конституція може бути змінена або доповнена рішенням власника сервера.</p>
+        <p>2. За необхідності власник може делегувати підготовку змін адміністрації або уповноваженим особам.</p>
+        <p>3. Нова редакція Конституції набуває чинності після її офіційного опублікування.</p>
+        <p>4. Окремі положення Конституції можуть бути змінені без повного перегляду документа.</p>
+      </section>
+
+      <section class="rules-section">
+        <h3>РОЗДІЛ IX. ВІДПОВІДАЛЬНІСТЬ ЗА ПОРУШЕННЯ КОНСТИТУЦІЇ</h3>
+        <p><strong>Стаття 15. Порушення Конституції</strong></p>
+        <p>1. Порушення Конституції є порушенням основних правил сервера.</p>
+        <p>2. Відповідальність визначається з урахуванням характеру, тяжкості та наслідків порушення.</p>
+        <p>3. Якщо за конкретне порушення передбачене покарання відповідним кодексом або правилами сервера, застосовується покарання, передбачене цим нормативним документом.</p>
+        <p>4. Якщо окреме покарання не передбачене, адміністрація має право визначити санкцію самостійно залежно від обставин.</p>
+        <p>5. За порушення Конституції можуть застосовуватися: попередження, дисциплінарне стягнення, зняття з посади, позбавлення доступу до певних повноважень, тимчасовий депорт, інше адміністративне покарання відповідно до тяжкості порушення.</p>
+        <p>6. У випадку грубого або навмисного порушення Конституції адміністрація має право застосувати депорт до 5 діб, якщо інше покарання не передбачене відповідними правилами.</p>
+        <p>7. Державний службовець, який порушив Конституцію під час виконання службових обов'язків, додатково може бути позбавлений посади.</p>
+        <p><strong>Стаття 16. Принцип відповідальності</strong></p>
+        <blockquote class="rules-quote">
+          Жоден гравець, незалежно від посади, рангу або статусу, не звільняється від відповідальності за порушення Конституції та правил сервера.
+        </blockquote>
+      </section>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Window for Anti-Corruption Code (КПК) -->
+<div class="modal-overlay" id="kpkModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>🛡️ КОДЕКС ПРОТИДІЇ КОРУПЦІЇ (КПК)</h2>
+      <button class="modal-close-btn" id="kpkModalCloseBtn">&times;</button>
+    </div>
+    <div class="modal-body">
+      <section class="rules-section">
+        <h3>Стаття 1. Загальні положення</h3>
+        <p><strong>1.1.</strong> Корупція — використання службового становища або повноважень для отримання неправомірної вигоди чи незаконного сприяння іншій особі.</p>
+        <p><strong>1.2.</strong> Корупція заборонена для всіх гравців незалежно від посади, організації чи статусу.</p>
+        <p><strong>1.3.</strong> Відповідальність настає як за отримання, так і за пропозицію або передачу неправомірної вигоди.</p>
+      </section>
+
+      <section class="rules-section">
+        <h3>Стаття 2. Хабарництво</h3>
+        <p>Заборонено пропонувати, вимагати, передавати або приймати гроші, майно чи послуги за:</p>
+        <p>— уникнення затримання або покарання;</p>
+        <p>— закриття чи приховування порушення;</p>
+        <p>— ігнорування злочину;</p>
+        <p>— незаконне отримання привілеїв;</p>
+        <p>— використання службових повноважень в особистих цілях.</p>
+        <p><em>Сама спроба запропонувати або отримати хабар є корупційним порушенням.</em></p>
+      </section>
+
+      <section class="rules-section">
+        <h3>Стаття 3. Звичайні гравці</h3>
+        <p>Якщо корупційне порушення вчинив звичайний гравець:</p>
+        <p>1. Штраф — <strong>8 000 €</strong>.</p>
+        <p>2. СБЛ має право затримати порушника, доставити його до суду та передати матеріали справи.</p>
+        <p>3. Суддя, ознайомившись із доказами, приймає рішення щодо накладення штрафу.</p>
+        <p>4. Якщо суддя відсутній на сервері, ВВБ має право самостійно накласти штраф.</p>
+      </section>
+
+      <section class="rules-section">
+        <h3>Стаття 4. Працівники державних структур</h3>
+        <p>Працівник поліції або іншої державної структури за звичайне корупційне порушення:</p>
+        <p>1. Штраф — <strong>8 000 €</strong>.</p>
+        <p>2. З огляду на формат Light RP, звичайне корупційне порушення не передбачає автоматичного звільнення.</p>
+        <p>3. У разі серйозного, повторного або організованого порушення матеріали передаються до ВВБ.</p>
+      </section>
+
+      <section class="rules-section">
+        <h3>Стаття 5. Керівники та високопосадовці</h3>
+        <p>1. Якщо корупцію вчинив керівник державної структури, суддя, високопосадовець або інша особа з великими службовими повноваженнями, СБЛ фіксує порушення та передає матеріали до ВВБ.</p>
+        <p>2. ВВБ проводить перевірку та за наявності достатніх доказів передає справу до суду або Адміністрації.</p>
+        <p>3. До таких осіб можуть застосовуватися: штраф; звільнення; заборона займати керівні посади; інші санкції відповідно до тяжкості порушення.</p>
+      </section>
+
+      <section class="rules-section">
+        <h3>Стаття 6. Посередництво та покриття</h3>
+        <p><strong>6.1.</strong> Посередництво — свідома допомога у передачі, отриманні або організації хабара між іншими особами.</p>
+        <p><strong>6.2.</strong> Посередник несе відповідальність нарівні з іншими учасниками корупційної схеми.</p>
+        <p><strong>6.3.</strong> Покриття корупції — навмисне приховування порушення, знищення доказів, попередження порушника або використання службового становища для уникнення ним відповідальності.</p>
+        <p><strong>6.4.</strong> Посередництво або покриття корупції працівником державної структури може бути підставою для передачі справи до ВВБ.</p>
+      </section>
+
+      <section class="rules-section">
+        <h3>Стаття 7. СБЛ та ВВБ</h3>
+        <p><strong>СБЛ:</strong></p>
+        <p>— виявляє та припиняє корупційні порушення;</p>
+        <p>— затримує звичайних порушників;</p>
+        <p>— доставляє їх до суду;</p>
+        <p>— збирає докази;</p>
+        <p>— передає справи щодо керівників та високопосадовців до ВВБ.</p>
+        <p>Якщо корупційна справа є великою, складною або стосується кількох осіб, СБЛ має право проводити спільну роботу з ВВБ та передавати їм зібрані матеріали.</p>
+        <p><strong>ВВБ:</strong></p>
+        <p>— розслідує серйозні корупційні справи;</p>
+        <p>— перевіряє діяльність керівників та працівників СБЛ/ВВБ;</p>
+        <p>— може самостійно накласти штраф 8 000 €, якщо суддя відсутній на сервері;</p>
+        <p>— передає особливо тяжкі справи до суду або Адміністрації.</p>
+        <p>Працівник СБЛ або ВВБ, викритий у корупції, підлягає звільненню з посади.</p>
+      </section>
+
+      <section class="rules-section">
+        <h3>Стаття 8. Докази</h3>
+        <p>Для підтвердження корупції використовуються: скриншоти; відео; аудіо; логи та повідомлення; показання свідків; інші матеріали, які підтверджують факт порушення.</p>
+        <p><em>Покарання не може ґрунтуватися лише на чутках або припущеннях.</em></p>
+      </section>
+
+      <section class="rules-section">
+        <h3>Стаття 9. Принцип рівності</h3>
+        <p>Посада, знайомства або авторитет не звільняють від відповідальності. Закон один для всіх, а міра покарання залежить від тяжкості та обставин порушення.</p>
+      </section>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Window for Criminal Code (ККЛ) -->
+<div class="modal-overlay" id="lawModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>⚖️ КРИМІНАЛЬНИЙ КОДЕКС ЛЕГАСІ (ККЛ)</h2>
+      <button class="modal-close-btn" id="lawModalCloseBtn">&times;</button>
+    </div>
+    <div class="modal-body">
+      <section class="rules-section">
+        <h3>РОЗДІЛ I. ЗЛОЧИНИ ПРОТИ ВЛАСНОСТІ</h3>
+        <p><strong>Стаття 1.1.</strong> Незаконне заволодіння коштами з каси АЗС — тюрма.</p>
+        <p><strong>Стаття 1.2.</strong> Пограбування каси магазину — тюрма.</p>
+        <p><strong>Стаття 1.3.</strong> Крадіжка майна або коштів із торгового автомата — тюрма.</p>
+        <p><strong>Стаття 1.4.</strong> Незаконне проникнення до банківського сховища з метою пограбування — тюрма.</p>
+        <p><strong>Стаття 1.5.</strong> Пограбування вантажного контейнера — тюрма.</p>
+        <p><strong>Стаття 1.6.</strong> Незаконне заволодіння вмістом сейфа — тюрма.</p>
+        <p><strong>Стаття 1.7.</strong> Крадіжка майна з ювелірного магазину — тюрма.</p>
+        <p><strong>Стаття 1.8.</strong> Пограбування громадянина — тюрма та повернення викраденого майна.</p>
+      </section>
+
+      <section class="rules-section">
+        <h3>РОЗДІЛ II. ЗЛОЧИНИ ПРОТИ ЖИТТЯ ТА ЗДОРОВ'Я</h3>
+        <p><strong>Стаття 2.1.</strong> Умисне позбавлення життя громадянина (вогнепальна зброя) — тюрма.</p>
+        <p><strong>Стаття 2.2.</strong> Умисне позбавлення життя правоохоронця (вогнепальна зброя) — тюрма.</p>
+        <p><strong>Стаття 2.3.</strong> Умисне позбавлення життя громадянина (холодна зброя) — тюрма.</p>
+        <p><strong>Стаття 2.4.</strong> Умисне позбавлення життя правоохоронця (холодна зброя) — тюрма.</p>
+        <p><strong>Стаття 2.5.</strong> Умисне позбавлення життя без зброї — тюрма.</p>
+        <p><strong>Стаття 2.6.</strong> Умисне позбавлення життя правоохоронця без зброї — тюрма.</p>
+        <p><strong>Стаття 2.7.</strong> Збройний напад на громадянина — тюрма.</p>
+        <p><strong>Стаття 2.8.</strong> Збройний напад на правоохоронця — тюрма.</p>
+        <p><strong>Стаття 2.9.</strong> Фізичний напад на громадянина без зброї — штраф 1000€–3000€ або тюрма.</p>
+        <p><strong>Стаття 2.10.</strong> Фізичний напад на правоохоронця без зброї — штраф 2000€–5000€ або тюрма.</p>
+      </section>
+
+      <section class="rules-section">
+        <h3>РОЗДІЛ III. ЗЛОЧИНИ ПРОТИ МАЙНА</h3>
+        <p><strong>Стаття 3.1.</strong> Завдання шкоди ТЗ внаслідок ДТП — компенсація 1000€–3000€.</p>
+        <p><strong>Стаття 3.2.</strong> Умисне пошкодження приватного майна — штраф 1000€–4000€ або тюрма.</p>
+        <p><strong>Стаття 3.3.</strong> Пошкодження державного майна — штраф 1000€–4000€.</p>
+        <p><strong>Стаття 3.4.</strong> Умисне знищення майна — компенсація збитків та тюрма.</p>
+      </section>
+
+      <section class="rules-section">
+        <h3>РОЗДІЛ IV. ЗЛОЧИНИ ПРОТИ ПРАВОПОРЯДКУ</h3>
+        <p><strong>Стаття 4.1.</strong> Спроба уникнути затримання — штраф 1000€–3000€ або тюрма.</p>
+        <p><strong>Стаття 4.2.</strong> Втеча на транспортному засобі — тюрма.</p>
+        <p><strong>Стаття 4.3.</strong> Ігнорування законних вимог правоохоронця — штраф 1000€–3000€ або тюрма.</p>
+        <p><strong>Стаття 4.4.</strong> Опір працівнику правоохоронного органу — тюрма.</p>
+        <p><strong>Стаття 4.5.</strong> Використання відмичок — штраф 1500€–3000€ або тюрма.</p>
+      </section>
+
+      <section class="rules-section">
+        <blockquote class="rules-quote">
+          ККЛ — Кримінальний кодекс LEGACY RP<br><br>
+          Незнання Кодексу не звільняє громадянина від відповідальності.
+        </blockquote>
+      </section>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Window for Faction Verification -->
+<div class="modal-overlay" id="verificationModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>ПЕРЕВІРКА ГРАВЦІВ</h2>
+      <button class="modal-close-btn" id="verificationModalCloseBtn">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-search-wrapper">
+        <img src="{48D7BABB-A509-4DF6-A882-C6183B75021A}.png" alt="Пошук" class="modal-search-icon" />
+        <input type="text" id="factionSearchInput" placeholder="Введіть нік гравця..." class="modal-search-input" />
+      </div>
+
+      <div class="verification-results" id="verificationResults">
+        <p class="verification-hint">Введіть нік гравця для швидкої перевірки</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Window for Factions & Organizations (Інтерактивний список фракцій без пошуку) -->
+<div class="modal-overlay" id="factionsModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>ФРАКЦІЇ ТА ОРГАНІЗАЦІЇ</h2>
+      <button class="modal-close-btn" id="factionsModalCloseBtn">&times;</button>
+    </div>
+    <div class="modal-body">
+      <p style="color: rgba(255,255,255,0.7); font-size: 15px; margin-bottom: 8px;">
+        Натисніть на будь-яку фракцію або організацію, щоб відкрити її повний регламент, опис та склад:
+      </p>
+
+      <div class="factions-directory-list" id="factionsDirectoryList"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <h1 class="hero-title">
+    ВІТАЄМО В <span class="orange">LEGACY RP!</span>
+  </h1>
+
+  <!-- Анімований слоган сервера -->
+  <div class="hero-slogan">
+    <p class="slogan-text">
+      <span class="highlight">Legacy RP</span> — це український сервер у стилі Light RP, створений для тих, хто цінує якісний геймплей, цікаві рольові ситуації та комфортну атмосферу.
+    </p>
+    <p class="slogan-text">
+      На сервері тебе чекає дружелюбне ком'юніті, активна адміністрація, регулярні івенти та різноманітні заходи.
+    </p>
+  </div>
+
+  <!-- Кнопка на головному екрані: ГРАТИ -->
+  <div class="hero-actions-container">
+    <a href="https://www.roblox.com/share?v=v2&code=5ihdm3h6vetvsb" target="_blank" class="hero-action-btn play">
+      ▶ ГРАТИ
+    </a>
+  </div>
+
+  <section class="home-rules" id="homeRules">
+    <h2 class="home-rules-title">
+      <img src="правила.png" alt="Правила" />
+      🇺🇦 ПРАВИЛА LEGACY RP
+    </h2>
+    <ol class="home-rules-list">
+      <li data-rule="1"><span class="home-rules-num">1)</span> RP / NON-RP</li>
+      <li data-rule="2"><span class="home-rules-num">2)</span> Зброя та спеціальні засоби</li>
+      <li data-rule="3"><span class="home-rules-num">3)</span> Злочини та RP-ситуації</li>
+      <li data-rule="4"><span class="home-rules-num">4)</span> Правоохоронці та державні служби</li>
+      <li data-rule="5"><span class="home-rules-num">5)</span> КПП та блокпости</li>
+      <li data-rule="6"><span class="home-rules-num">6)</span> Транспорт</li>
+      <li data-rule="7"><span class="home-rules-num">7)</span> Порядок на сервері</li>
+      <li data-rule="8"><span class="home-rules-num">8)</span> Чити, баги та обхід покарання</li>
+      <li data-rule="9"><span class="home-rules-num">9)</span> Адміністрація</li>
+      <li data-rule="10"><span class="home-rules-num">10)</span> Загальні положення</li>
+      <li data-rule="11"><span class="home-rules-num">11)</span> Пропаганда</li>
+      <li data-rule="12"><span class="home-rules-num">12)</span> Правила дорожнього руху (ПДР)</li>
+      <li data-rule="13"><span class="home-rules-num">13)</span> Зелені зони</li>
+      <li data-rule="14"><span class="home-rules-num">14)</span> Зовнішній вигляд та скіни</li>
+    </ol>
+  </section>
+
+  <div class="social-buttons-container">
+    <a href="https://t.me/legacy_rp_uk" target="_blank" class="social-btn">
+      <img src="{EA253BCB-84A3-45C9-AD42-1E6C99548081}.png" alt="Telegram" class="social-btn-icon" />
+      TELEGRAM
+    </a>
+    <a href="https://www.tiktok.com/@legacy.ukraine.rp?_r=1&_t=ZS-98zkYHMo0OG" target="_blank" class="social-btn">
+      <img src="{8014DF38-D86A-48D6-856E-0553BBFD17C5}.png" alt="TikTok" class="social-btn-icon" />
+      TIKTOK
+    </a>
+    <a href="https://www.tiktok.com/@legacy.ukraine.rp?_r=1&_t=ZS-98zkYHMo0OG" target="_blank" class="social-btn">
+      <img src="{0C7B8A2F-1572-449A-99F6-8CF186EAE81B}.png" alt="YouTube" class="social-btn-icon" />
+      YOUTUBE
+    </a>
+  </div>
+</div>
+
+<!-- Футер сайту: Всі права захищені + зворотній зв'язок -->
+<footer class="site-footer">
+  <p><span class="copyright-symbol">©</span> 2026 LEGACY RP. Всі права захищені.</p>
+  <div class="site-footer-feedback">
+    Зворотній зв'язок: <a href="mailto:legacy.rp.ukraine@gmail.com">legacy.rp.ukraine@gmail.com</a>
+  </div>
+</footer>
+
+<div class="cookie-popup" id="cookiePopup">
+  <p>🍪 Цей сайт використовує cookies для покращення роботи. Продовжуючи користуватися сайтом, ви погоджуєтесь з цим.</p>
+  <div class="cookie-buttons">
+    <button class="cookie-btn accept" onclick="closeCookie()">Прийняти</button>
+    <button class="cookie-btn decline" onclick="closeCookie()">Відхилити</button>
+  </div>
+</div>
+
+<script>
+  function closeCookie() {
+    document.getElementById('cookiePopup').classList.add('hidden');
+  }
+
+  if (localStorage.getItem('cookiesAccepted') === 'true') {
+    document.getElementById('cookiePopup').classList.add('hidden');
+  }
+
+  document.querySelector('.cookie-btn.accept').addEventListener('click', () => {
+    localStorage.setItem('cookiesAccepted', 'true');
+  });
+  document.querySelector('.cookie-btn.decline').addEventListener('click', () => {
+    localStorage.setItem('cookiesAccepted', 'false');
+  });
+
+  // Side Drawer Toggle Logic
+  const menuToggleBtn = document.getElementById('menuToggleBtn');
+  const sideDrawer = document.getElementById('sideDrawer');
+  const drawerOverlay = document.getElementById('drawerOverlay');
+  const drawerCloseBtn = document.getElementById('drawerCloseBtn');
+
+  function openDrawer() {
+    sideDrawer.classList.add('active');
+    drawerOverlay.classList.add('active');
+  }
+
+  function closeDrawer() {
+    sideDrawer.classList.remove('active');
+    drawerOverlay.classList.remove('active');
+  }
+
+  menuToggleBtn.addEventListener('click', openDrawer);
+  drawerCloseBtn.addEventListener('click', closeDrawer);
+  drawerOverlay.addEventListener('click', closeDrawer);
+
+  // Modal Rules Window Toggle Logic
+  const rulesBtn = document.getElementById('rulesBtn');
+  const rulesModal = document.getElementById('rulesModal');
+  const modalCloseBtn = document.getElementById('modalCloseBtn');
+
+  function openModal() {
+    closeDrawer();
+    rulesModal.classList.add('active');
+  }
+
+  function closeModal() {
+    rulesModal.classList.remove('active');
+  }
+
+  if (rulesBtn) rulesBtn.addEventListener('click', openModal);
+  if (modalCloseBtn) modalCloseBtn.addEventListener('click', closeModal);
+  if (rulesModal) {
+    rulesModal.addEventListener('click', (e) => {
+      if (e.target === rulesModal) closeModal();
+    });
+  }
+
+  // Verification Modal Toggle Logic
+  const verificationBtn = document.getElementById('verificationBtn');
+  const verificationModal = document.getElementById('verificationModal');
+  const verificationModalCloseBtn = document.getElementById('verificationModalCloseBtn');
+
+  function openVerificationModal() {
+    closeDrawer();
+    verificationModal.classList.add('active');
+  }
+
+  function closeVerificationModal() {
+    verificationModal.classList.remove('active');
+  }
+
+  if (verificationBtn) verificationBtn.addEventListener('click', openVerificationModal);
+  if (verificationModalCloseBtn) verificationModalCloseBtn.addEventListener('click', closeVerificationModal);
+  if (verificationModal) {
+    verificationModal.addEventListener('click', (e) => {
+      if (e.target === verificationModal) closeVerificationModal();
+    });
+  }
+
+  // Factions Modal Toggle Logic
+  const factionsBtn = document.getElementById('factionsBtn');
+  const factionsModal = document.getElementById('factionsModal');
+  const factionsModalCloseBtn = document.getElementById('factionsModalCloseBtn');
+
+  function openFactionsModal() {
+    closeDrawer();
+    if (factionsModal) factionsModal.classList.add('active');
+    renderFactionsDirectory();
+  }
+
+  function closeFactionsModal() {
+    if (factionsModal) factionsModal.classList.remove('active');
+  }
+
+  if (factionsBtn) factionsBtn.addEventListener('click', openFactionsModal);
+  if (factionsModalCloseBtn) factionsModalCloseBtn.addEventListener('click', closeFactionsModal);
+  if (factionsModal) {
+    factionsModal.addEventListener('click', (e) => {
+      if (e.target === factionsModal) closeFactionsModal();
+    });
+  }
+
+  // КПК (Кодекс протидії корупції) — окрема модалка
+  const kpkBtn = document.getElementById('kpkBtn');
+  const kpkModal = document.getElementById('kpkModal');
+  const kpkModalCloseBtn = document.getElementById('kpkModalCloseBtn');
+
+  function openKpkModal() {
+    closeDrawer();
+    if (kpkModal) kpkModal.classList.add('active');
+  }
+
+  function closeKpkModal() {
+    if (kpkModal) kpkModal.classList.remove('active');
+  }
+
+  if (kpkBtn) kpkBtn.addEventListener('click', openKpkModal);
+  if (kpkModalCloseBtn) kpkModalCloseBtn.addEventListener('click', closeKpkModal);
+  if (kpkModal) {
+    kpkModal.addEventListener('click', (e) => {
+      if (e.target === kpkModal) closeKpkModal();
+    });
+  }
+
+  // Law Modal Toggle Logic
+  const lawBtn = document.getElementById('lawBtn');
+  const lawModal = document.getElementById('lawModal');
+  const lawModalCloseBtn = document.getElementById('lawModalCloseBtn');
+
+  function openLawModal() {
+    closeDrawer();
+    if (lawModal) lawModal.classList.add('active');
+  }
+
+  function closeLawModal() {
+    if (lawModal) lawModal.classList.remove('active');
+  }
+
+  if (lawBtn) lawBtn.addEventListener('click', openLawModal);
+  if (lawModalCloseBtn) lawModalCloseBtn.addEventListener('click', closeLawModal);
+  if (lawModal) {
+    lawModal.addEventListener('click', (e) => {
+      if (e.target === lawModal) closeLawModal();
+    });
+  }
+
+  // Green Zones Modal Toggle Logic
+  const greenZonesBtn = document.getElementById('greenZonesBtn');
+  const greenZonesModal = document.getElementById('greenZonesModal');
+  const greenZonesModalCloseBtn = document.getElementById('greenZonesModalCloseBtn');
+
+  function openGreenZonesModal() {
+    closeDrawer();
+    if (greenZonesModal) greenZonesModal.classList.add('active');
+  }
+
+  function closeGreenZonesModal() {
+    if (greenZonesModal) greenZonesModal.classList.remove('active');
+  }
+
+  if (greenZonesBtn) greenZonesBtn.addEventListener('click', openGreenZonesModal);
+  if (greenZonesModalCloseBtn) greenZonesModalCloseBtn.addEventListener('click', closeGreenZonesModal);
+  if (greenZonesModal) {
+    greenZonesModal.addEventListener('click', (e) => {
+      if (e.target === greenZonesModal) closeGreenZonesModal();
+    });
+  }
+
+  // Constitution Modal Toggle Logic
+  const constitutionBtn = document.getElementById('constitutionBtn');
+  const constitutionModal = document.getElementById('constitutionModal');
+  const constitutionModalCloseBtn = document.getElementById('constitutionModalCloseBtn');
+
+  function openConstitutionModal() {
+    closeDrawer();
+    if (constitutionModal) constitutionModal.classList.add('active');
+  }
+
+  function closeConstitutionModal() {
+    if (constitutionModal) constitutionModal.classList.remove('active');
+  }
+
+  if (constitutionBtn) constitutionBtn.addEventListener('click', openConstitutionModal);
+  if (constitutionModalCloseBtn) constitutionModalCloseBtn.addEventListener('click', closeConstitutionModal);
+  if (constitutionModal) {
+    constitutionModal.addEventListener('click', (e) => {
+      if (e.target === constitutionModal) closeConstitutionModal();
+    });
+  }
+
+  // Server Rules Modal Toggle Logic
+  const serverRulesModal = document.getElementById('serverRulesModal');
+  const serverRulesModalCloseBtn = document.getElementById('serverRulesModalCloseBtn');
+
+  function openServerRulesModal(ruleId) {
+    closeDrawer();
+    serverRulesModal.classList.add('active');
+    if (ruleId) {
+      requestAnimationFrame(() => {
+        const target = document.getElementById('rule-section-' + ruleId);
+        const body = serverRulesModal.querySelector('.modal-body');
+        if (target && body) {
+          body.scrollTop = target.offsetTop - body.offsetTop - 12;
+        }
+      });
+    }
+  }
+
+  function closeServerRulesModal() {
+    serverRulesModal.classList.remove('active');
+  }
+
+  if (serverRulesModalCloseBtn) serverRulesModalCloseBtn.addEventListener('click', closeServerRulesModal);
+  if (serverRulesModal) {
+    serverRulesModal.addEventListener('click', (e) => {
+      if (e.target === serverRulesModal) closeServerRulesModal();
+    });
+  }
+
+  document.querySelectorAll('.home-rules-list li').forEach((item) => {
+    item.addEventListener('click', () => {
+      openServerRulesModal(item.dataset.rule);
+    });
+  });
+
+  // Verification & Members Data
+  const verificationData = [
+    { nickname: 'MarkizaJu', factions: ['НПЛ'], image: 'npl_MarkizaJu.jpg' },
+    { nickname: 'jdjdudhshshdb', factions: ['НПЛ', 'СБС', 'СБЛ'], role: 'Працівник СБС', image: 'npl_jdjdudhshshdb.jpg' },
+    { nickname: 'roxbennis12', factions: ['НПЛ', 'Адміністрація'], image: 'npl_roxbennis12.jpg' },
+    { nickname: 'foksy070', factions: ['НПЛ'] },
+    { nickname: 'Tinala29', factions: ['НПЛ'] },
+    { nickname: 'Eugen_I3', factions: ['НПЛ'], note: 'Най активніший гравець сервера' },
+    { nickname: 'pro123432148', factions: ['НПЛ'] },
+    { nickname: 'prava6859', factions: ['НПЛ'] },
+    { nickname: 'vip-teg5', factions: ['НПЛ'] },
+    { nickname: 'dragon_not08', factions: ['НПЛ'] },
+    { nickname: 'Danfas4', factions: ['НПЛ', 'Адміністрація'] },
+    { nickname: 'SIGMA2019827', factions: ['Адміністрація'], note: 'Най активніший гравець сервера' },
+    { nickname: 'makxuitaem', factions: ['Суд'], role: 'Заступник Головного Судді' },
+    { nickname: 'Asda7771jog', factions: ['Суд'], role: 'Охоронець суду', note: 'Ліцензія: активна' },
+    { nickname: 'plecak_plecak1234', factions: ['СБЛ'], role: 'Працівник СБЛ' }
+  ];
+
+  function getFactionBadgeClass(faction) {
+    if (faction === 'Адміністрація') return 'admin-badge';
+    if (faction === 'Суд') return 'court-badge';
+    if (faction === 'НПЛ') return 'police-badge';
+    if (faction === 'СБЛ' || faction === 'СБС') return 'security-badge';
+    if (faction === 'LNG') return 'police-badge';
+    if (faction === 'ВВБ') return 'admin-badge';
+    if (faction === 'Мерія') return 'court-badge';
+    if (faction === 'ДРУ') return 'dru-badge';
+    return '';
+  }
+
+  // Повні не обрізані дані фракцій та організацій
+  const factionsDirectory = [
+    {
+      key: 'LNG',
+      name: 'Національна Гвардія LEGACY (LNG)',
+      fullContent: `
+        <div class="faction-desc-box">
+          Національна Гвардія LEGACY (LNG) — військове формування (SEK), основним завданням якого є підтримка правоохоронних органів, забезпечення безпеки та участь у спеціальних операціях на території штату.<br><br>
+          Національна Гвардія залучається у ситуаціях, де поліції необхідна додаткова підтримка, охорона важливих об'єктів або посилення під час проведення небезпечних операцій.
+        </div>
+        <div class="faction-block">
+          <strong>Основні обов'язки Національної Гвардії:</strong>
+          <ul>
+            <li>Виїзд на пограбування та інші небезпечні ситуації.</li>
+            <li>Надання підтримки поліції під час виконання службових завдань.</li>
+            <li>Участь у спеціальних операціях.</li>
+            <li>Охорона важливих державних та стратегічних об'єктів.</li>
+            <li>Забезпечення безпеки та підтримання порядку в межах своїх повноважень.</li>
+            <li>Надання додаткової силової підтримки правоохоронним органам у разі необхідності.</li>
+          </ul>
+        </div>
+        <div class="faction-block">
+          <strong>Роль Національної Гвардії:</strong><br>
+          Національна Гвардія не є звичайним поліцейським підрозділом. Її основна роль полягає у підтримці поліції та виконанні завдань, що потребують залучення військового формування. Працює за геймпас <strong>SEK</strong>.
+        </div>
+        <div class="faction-block">
+          <strong>Національна Гвардія не має права:</strong>
+          <ul>
+            <li>Самостійно виконувати роль звичайної поліції.</li>
+            <li>Виписувати штрафи за порушення ПДР.</li>
+          </ul>
+        </div>
+        <div class="faction-block" style="color: #ff9f43;">
+          <strong>Повноваження:</strong><br>
+          Національна Гвардія LEGACY працює з такими пунктами правил серверу: <strong>2, 3.2</strong><br>
+          ККЛ: <strong>1, 2, 4</strong><br>
+          <em>(Мають право застосовувати заходи до гравців за порушення цих пунктів)</em>
+        </div>
+      `
+    },
+    {
+      key: 'СБЛ',
+      name: 'Служба Безпеки LEGACY (СБЛ / SSL)',
+      fullContent: `
+        <div class="faction-desc-box">
+          Служба Безпеки LEGACY (СБЛ / SSL — Security Service Legacy) — це спеціальний силовий підрозділ, призначений для виконання особливо складних, небезпечних і відповідальних завдань, з якими не можуть ефективно впоратися звичайні підрозділи поліції або КОРД.<br><br>
+          СБЛ залучається до ситуацій підвищеної небезпеки, боротьби з особливо небезпечними злочинцями та проведення спеціальних операцій. Підрозділ має обмежений склад і формується переважно з досвідчених RP-гравців, які добре знають правила, законодавство та принципи RolePlay.
+        </div>
+        <div class="faction-block">
+          <strong>Основні завдання СБЛ:</strong>
+          <ul>
+            <li>Проведення антитерористичних операцій та реагування на терористичні загрози.</li>
+            <li>Штурм укріплених або особливо небезпечних об'єктів, коли для цього необхідне залучення спеціального підрозділу.</li>
+            <li>Звільнення заручників та участь в операціях, пов'язаних із захопленням людей.</li>
+            <li>Розмінування будівель, територій та інших небезпечних об'єктів, а також реагування на повідомлення про вибухові загрози.</li>
+            <li>Нейтралізація особливо небезпечних осіб, які становлять серйозну загрозу для громадян або державних структур.</li>
+            <li>Участь у спеціальних операціях спільно з іншими правоохоронними та силовими підрозділами.</li>
+            <li>Протидія корупції та діяльності осіб, які використовують своє службове становище у незаконних цілях.</li>
+            <li>Виявлення та притягнення до відповідальності корумпованих посадових осіб у межах повноважень підрозділу.</li>
+          </ul>
+        </div>
+        <div class="faction-block">
+          <strong>Роль СБЛ:</strong><br>
+          СБЛ не виконує функції звичайного патрульного підрозділу. Основна роль Служби Безпеки LEGACY полягає у реагуванні на особливо небезпечні ситуації, проведенні спеціальних операцій та боротьбі зі злочинами підвищеної небезпеки. Підрозділ залучається до операцій, де необхідні досвід, спеціальна підготовка, злагоджені командні дії та суворе дотримання протоколів.
+        </div>
+        <div class="faction-block">
+          <strong>Особливості підрозділу:</strong><br>
+          СБЛ має обмежений склад. Кожен співробітник повинен відповідати високим вимогам щодо:
+          <ul>
+            <li>знання правил сервера та законодавства;</li>
+            <li>знання основ RolePlay;</li>
+            <li>вміння діяти в небезпечних та нестандартних ситуаціях;</li>
+            <li>дисципліни та дотримання субординації;</li>
+            <li>командної роботи;</li>
+            <li>відповідального використання службових повноважень.</li>
+          </ul>
+        </div>
+        <div class="faction-block" style="color: #ff9f43;">
+          <strong>Повноваження СБЛ:</strong><br>
+          Служба Безпеки LEGACY працює зі статтями: <strong>Корупційний кодекс: 2; ККЛ: 2, 4</strong>.
+        </div>
+      `
+    },
+    {
+      key: 'ВВБ',
+      name: 'Відділ Внутрішньої Безпеки (ВВБ)',
+      fullContent: `
+        <div class="faction-desc-box">
+          Відділ Внутрішньої Безпеки (ВВБ) — спеціальний підрозділ, який контролює діяльність співробітників державних фракцій та стежить за дотриманням ними законів, внутрішніх правил і службових протоколів.<br><br>
+          ВВБ частково виконує функції ДБР, зокрема займається виявленням, документуванням та розслідуванням порушень, скоєних працівниками державних структур.
+        </div>
+        <div class="faction-block">
+          <strong>Основні завдання:</strong>
+          <ul>
+            <li>Патрулювання та контроль за діяльністю співробітників державних фракцій.</li>
+            <li>Виявлення порушень законів, внутрішніх правил та службових протоколів.</li>
+            <li>Зупинка та перевірка співробітників у разі виявлення порушення.</li>
+            <li>Збір доказів та проведення службових розслідувань.</li>
+            <li>Розгляд скарг на співробітників державних фракцій.</li>
+            <li>Виявлення фактів корупції та зловживання службовими повноваженнями.</li>
+            <li>Притягнення порушників до відповідальності в межах повноважень ВВБ.</li>
+          </ul>
+        </div>
+        <div class="faction-block">
+          <strong>Порядок притягнення:</strong><br>
+          Якщо під час патрулювання ВВБ виявляє порушення, співробітник може бути зупинений для перевірки. Залежно від характеру порушення ВВБ має право:
+          <ul>
+            <li>виписати передбачений штраф на місці;</li>
+            <li>затримати порушника та доставити його до суду;</li>
+            <li>провести додаткове розслідування та зібрати необхідні докази.</li>
+          </ul>
+          <em>ВВБ може застосовувати відповідальність лише за тими статтями та пунктами, з якими працює підрозділ.</em>
+        </div>
+        <div class="faction-block" style="color: #ff9f43;">
+          <strong>Повноваження ВВБ:</strong><br>
+          ВВБ працює з пунктами правил: <strong>4, 5</strong> (виписують штрафи за порушення цих пунктів).
+        </div>
+      `
+    },
+    {
+      key: 'Суд',
+      name: 'Суд LEGACY RP',
+      fullContent: `
+        <div class="faction-desc-box">
+          Суд LEGACY RP — незалежний орган правосуддя, який розглядає кримінальні та адміністративні справи, скарги, спори та інші правопорушення відповідно до законодавства сервера.<br><br>
+          Суд не підпорядковується поліції, ВВБ, СБЛ чи іншим державним фракціям та приймає рішення самостійно, керуючись доказами, показаннями учасників справи та чинним законодавством.
+        </div>
+        <div class="faction-block">
+          <strong>Основні завдання суду:</strong>
+          <ul>
+            <li>Розгляд кримінальних та адміністративних справ.</li>
+            <li>Розгляд скарг на дії державних службовців.</li>
+            <li>Перевірка законності затримань та притягнення до відповідальності.</li>
+            <li>Оцінка доказів та свідчень учасників справи.</li>
+            <li>Винесення судових рішень і вироків.</li>
+            <li>Призначення покарання відповідно до законодавства.</li>
+            <li>Розгляд повторних справ за наявності законних підстав.</li>
+          </ul>
+        </div>
+        <div class="faction-block">
+          <strong>Судове засідання:</strong><br>
+          Судове засідання проводиться після доставки затриманого до суду або за необхідності розгляду справи судом. Під час засідання суддя заслуховує сторони справи, ознайомлюється з доказами, встановлює обставини правопорушення та приймає остаточне рішення відповідно до законодавства.<br><br>
+          <em>Максимальна тривалість одного судового засідання — 1–3 хвилини. Якщо порушення та вина особи підтверджуються достатніми доказами, суд може винести рішення без тривалого розгляду.</em>
+        </div>
+        <div class="faction-block">
+          <strong>Незалежність та склад суду:</strong><br>
+          Суддя зобов'язаний залишатися неупередженим та не може приймати рішення під тиском інших фракцій або окремих осіб. Втручання у роботу суду, тиск на суддю або спроби вплинути на його рішення суворо заборонені. Кількість суддів обмежена для забезпечення якості розгляду справ.
+        </div>
+      `
+    },
+    {
+      key: 'НПЛ',
+      name: 'Національна Поліція LEGACY (НПЛ)',
+      fullContent: `
+        <div class="faction-desc-box">
+          Національна Поліція LEGACY (НПЛ) — основний правоохоронний орган LEGACY RP, який забезпечує громадський порядок, реагує на правопорушення, проводить затримання та притягує порушників до відповідальності відповідно до законодавства сервера.<br><br>
+          НПЛ є основною фракцією, яка займається щоденним патрулюванням та реагуванням на більшість правопорушень.
+        </div>
+        <div class="faction-block">
+          <strong>Основні завдання НПЛ:</strong>
+          <ul>
+            <li>Патрулювання території штату.</li>
+            <li>Реагування на повідомлення про правопорушення.</li>
+            <li>Затримання та доставлення правопорушників.</li>
+            <li>Проведення перевірок і встановлення особи порушника.</li>
+            <li>Охорона громадського порядку.</li>
+            <li>Участь у спецопераціях.</li>
+            <li>Розшук та затримання осіб, які перебувають у розшуку.</li>
+            <li>Контроль за дотриманням законодавства та правил сервера.</li>
+          </ul>
+        </div>
+        <div class="faction-block">
+          <strong>Підрозділи НПЛ:</strong>
+          <ul>
+            <li><strong>НППЛ</strong> — Національна Патрульна Поліція LEGACY (основний патрульний підрозділ).</li>
+            <li><strong>НДПЛ</strong> — Національна Дорожня Поліція LEGACY (контроль правил дорожнього руху).</li>
+            <li><strong>КОРД</strong> — Корпус Оперативно-Раптової Дії (силові операції та затримання небезпечних осіб).</li>
+            <li><strong>ОПП</strong> — Оперативний підрозділ прикриття (служба під прикриттям для документування злочинів).</li>
+          </ul>
+          <em>«Незалежно від підрозділу, усі співробітники НПЛ працюють за єдиними статтями та пунктами законодавства. Розподіл підрозділів потрібен переважно для організації роботи, а не для створення окремих правил відповідальності. Це відповідає формату Light RP сервера.»</em>
+        </div>
+        <div class="faction-block">
+          <strong>Повноваження НПЛ:</strong><br>
+          Залежно від характеру правопорушення поліцейський може виписати штраф, провести затримання, доставити затриманого до суду, оголосити особу в розшук, вилучити заборонені предмети або застосувати спецзасоби чи зброю у випадках, передбачених законом. НПЛ не має права притягувати особу до відповідальності без законної підстави.
+        </div>
+        <div class="faction-block" style="color: #ff9f43;">
+          <strong>За якими пунктами працює НПЛ:</strong><br>
+          Пункти правил: <strong>2, 3, 12</strong><br>
+          ККЛ: <strong>1, 2, 3, 4</strong>
+        </div>
+      `
+    },
+    {
+      key: 'Мерія',
+      name: 'Мерія LEGACY RP',
+      fullContent: `
+        <div class="faction-desc-box">
+          Мерія LEGACY — державна структура, яка відповідає за адміністративну діяльність, розвиток штату та організацію державних процесів у межах LEGACY RP.<br><br>
+          Основна роль мерії — представляти інтереси штату, розробляти пропозиції щодо його розвитку та брати участь в організації державного життя сервера.
+        </div>
+        <div class="faction-block">
+          <strong>Основні завдання мерії:</strong>
+          <ul>
+            <li>Організація державних заходів та подій.</li>
+            <li>Розробка пропозицій щодо розвитку сервера.</li>
+            <li>Створення та підтримка державних ініціатив.</li>
+            <li>Взаємодія з іншими державними структурами.</li>
+            <li>Розгляд ідей та пропозицій щодо покращення сервера.</li>
+          </ul>
+        </div>
+        <div class="faction-block">
+          <strong>Розвиток та будівництво:</strong><br>
+          Мерія не має права самостійно будувати або змінювати карту сервера. Однак співробітники мерії можуть розробляти власні ідеї щодо розвитку сервера, нових будівель, об'єктів або інших змін та пропонувати їх власнику сервера.<br><br>
+          <em>Остаточне рішення щодо реалізації будь-яких ідей, будівництва чи змін на сервері приймає власник сервера. У разі схвалення саме власник або уповноважена ним особа реалізує запропоновану ідею.</em>
+        </div>
+      `
+    },
+    {
+      key: 'ДРУ',
+      name: 'ДРУ — Державний реєстр угрупувань',
+      fullContent: `
+        <div class="faction-desc-box">
+          Державний реєстр угрупувань (ДРУ) — це система реєстрації кримінальних організацій на сервері LEGACY RP.<br><br>
+          ДРУ визначає різницю між звичайними грабіжниками та організованими кримінальними угрупуваннями, такими як банди, мафії, картелі та інші підпільні організації.
+        </div>
+        <div class="faction-block">
+          <strong>1. Прості грабіжники:</strong>
+          <ul>
+            <li>Зазвичай від 1 до 3 учасників.</li>
+            <li>Не мають офіційної реєстрації, постійної бази чи штабу. Не контролюють території.</li>
+            <li><strong>Можуть:</strong> здійснювати дрібні злочини, невеликі пограбування, брати участь в окремій кримінальній діяльності.</li>
+            <li><strong>Не можуть:</strong> вимагати «данину», контролювати райони/території, оголошувати війни іншим організаціям, брати участь у війнах за території, представляти себе офіційною мафією/бандою/картелем.</li>
+          </ul>
+        </div>
+        <div class="faction-block">
+          <strong>2. Кримінальні організації:</strong>
+          <ul>
+            <li>Мінімум 4–5 учасників, наявність лідера, визначена структура та власна база.</li>
+            <li><strong>Можуть:</strong> контролювати території в межах правил, брати участь у війнах за території, брати участь у штурмах та масштабних кримінальних івентах, вести сплановану кримінальну діяльність.</li>
+          </ul>
+        </div>
+        <div class="faction-block">
+          <strong>3. Реєстрація в ДРУ:</strong><br>
+          Створення та діяльність мафії, банди, картелю або іншої кримінальної організації без офіційної реєстрації <strong>заборонені</strong>. Незареєстроване угрупування не має права офіційно брати участь у глобальних івентах та війнах за території.
+        </div>
+        <div class="faction-block">
+          <strong>4. Як зареєструвати організацію:</strong>
+          <ul>
+            <li>1. Заповнити заявку через офіційного бота <strong>@Registration_criminal_bot</strong>.</li>
+            <li>2. Сплатити реєстраційний внесок у розмірі <strong>8 000 €</strong>.</li>
+            <li>3. Дочекатися перевірки та схвалення заявки.</li>
+            <li>4. Після схвалення організацію буде внесено до ДРУ.</li>
+          </ul>
+        </div>
+        <div class="faction-block" style="color: #ff6b6b;">
+          <strong>5. Покарання за діяльність без реєстрації:</strong><br>
+          За створення або діяльність незареєстрованої кримінальної організації всі її учасники можуть бути покарані <strong>депортацією строком до 7 діб</strong>.
+        </div>
+      `
+    },
+    {
+      key: 'Адміністрація',
+      name: 'Адміністрація сервера',
+      fullContent: `
+        <div class="faction-desc-box">
+          Адміністрація сервера LEGACY RP забезпечує порядок, модерацію, технічну підтримку, організацію івентів та контроль за неухильним дотриманням правил проекту всіма гравцями.
+        </div>
+        <div class="faction-block">
+          <strong>Обов'язки:</strong>
+          <ul>
+            <li>Розгляд скарг та вирішення конфліктних RP/Non-RP ситуацій.</li>
+            <li>Застосування дисциплінарних заходів (попередження, депорт, бан).</li>
+            <li>Підтримка дружньої та комфортної атмосфери для гравців.</li>
+          </ul>
+        </div>
+      `
+    }
+  ];
+
+  function getFactionMembers(key) {
+    return verificationData.filter(p => p.factions.includes(key));
+  }
+
+  // Render Interactive Factions Directory (Акордеон без пошуку з повними даними)
+  function renderFactionsDirectory() {
+    const container = document.getElementById('factionsDirectoryList');
+    if (!container) return;
+
+    container.innerHTML = factionsDirectory.map((f, index) => {
+      const members = getFactionMembers(f.key);
+      const membersHtml = members.length
+        ? `
+            <div class="faction-members-heading">Склад підтверджених учасників:</div>
+            <div class="members-grid">
+              ${members.map(p => {
+                const avatarHtml = p.image 
+                  ? `<img src="${p.image}" class="member-avatar" onerror="this.style.display='none'" />` 
+                  : '';
+                const roleHtml = p.role ? `<div class="member-role">${p.role}</div>` : '';
+                const noteHtml = p.note ? `<span class="member-badge-green">${p.note}</span>` : '';
+                return `
+                  <div class="member-row">
+                    ${avatarHtml}
+                    <div>
+                      <span class="member-name">${p.nickname}</span>
+                      ${noteHtml}
+                      ${roleHtml}
+                    </div>
+                  </div>
+                `;
+              }).join('')}
+            </div>
+          `
+        : '';
+
+      const isDefaultActive = index === 0 ? 'active' : '';
+
+      return `
+        <div class="faction-accordion-item ${isDefaultActive}" onclick="toggleFactionAccordion(this)">
+          <div class="faction-item-header">
+            <div class="faction-item-title-box">
+              <span class="player-faction-badge ${getFactionBadgeClass(f.key)}">${f.key}</span>
+              <span class="faction-item-title">${f.name}</span>
+            </div>
+            <span class="faction-arrow">▼</span>
+          </div>
+          <div class="faction-item-body">
+            ${f.fullContent}
+            ${membersHtml}
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function toggleFactionAccordion(item) {
+    const isCurrentlyActive = item.classList.contains('active');
+    document.querySelectorAll('.faction-accordion-item').forEach(el => el.classList.remove('active'));
+    if (!isCurrentlyActive) {
+      item.classList.add('active');
+    }
+  }
+
+  // Quick Verification Search
+  const factionSearchInput = document.getElementById('factionSearchInput');
+  const verificationResults = document.getElementById('verificationResults');
+
+  if (factionSearchInput && verificationResults) {
+    factionSearchInput.addEventListener('input', (e) => {
+      const query = e.target.value.toLowerCase().trim();
+
+      if (query === '') {
+        verificationResults.innerHTML = '<p class="verification-hint">Введіть нік гравця для швидкої перевірки</p>';
+        return;
+      }
+
+      const matches = verificationData.filter(player =>
+        player.nickname.toLowerCase().includes(query)
+      );
+
+      if (matches.length === 0) {
+        verificationResults.innerHTML = '<p class="no-results">Гравця не знайдено</p>';
+        return;
+      }
+
+      verificationResults.innerHTML = matches.map(player => {
+        const badges = player.factions.map(f =>
+          `<span class="player-faction-badge ${getFactionBadgeClass(f)}">${f}</span>`
+        ).join('');
+
+        let extra = '';
+        if (player.role) extra += `<div class="player-role">${player.role}</div>`;
+        if (player.note) extra += `<div class="player-note">${player.note}</div>`;
+
+        const avatar = player.image ? `<img src="${player.image}" class="member-avatar" style="margin-bottom:8px;" onerror="this.style.display='none'"/>` : '';
+
+        return `
+          <div class="player-card">
+            ${avatar}
+            <div class="player-nickname">${player.nickname}</div>
+            ${extra}
+            <div class="player-factions">${badges}</div>
+          </div>
+        `;
+      }).join('');
+    });
+  }
+</script>
+
+</body>
+</html>
